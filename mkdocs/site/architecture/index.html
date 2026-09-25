@@ -5,14 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Architecture - A.R.M Project Docs</title>
+    <title>ARM v3 — Detailed Architecture Reference - A.R.M Project Docs</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Architecture";
+        var mkdocs_page_name = "ARM v3 \u2014 Detailed Architecture Reference";
         var mkdocs_page_input_path = "architecture.md";
         var mkdocs_page_url = null;
       </script>
@@ -45,47 +45,26 @@
       </div>
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Arch Doc Links</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
-                </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
               </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
-                </li>
-              </ul>
-              <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="#">Architecture</a>
-    <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#00-vision-goals-and-principles">00 — Vision, Goals, and Principles</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#01-system-architecture-overview">01 — System Architecture Overview</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#02-job-lifecycle-crash-recovery">02 — Job Lifecycle &amp; Crash Recovery</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#03-protocol-rest-websocket-contract">03 — Protocol: REST + WebSocket Contract</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#04-data-model">04 — Data Model</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#05-cross-cutting-concerns">05 — Cross-Cutting Concerns</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#06-deployment">06 — Deployment</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#07-open-questions-deferred-decisions">07 — Open Questions &amp; Deferred Decisions</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#08-v2-isolation-and-cutover-plan">08 — v2 Isolation and Cutover Plan</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#09-testing-philosophy-as-built">09 — Testing Philosophy (as-built)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#10-iso-source-ripping-proposed-design-only">10 — ISO-Source Ripping (proposed, design only)</a>
-    </li>
-    <li class="toctree-l2"><a class="reference internal" href="#how-the-eleven-documents-fit-together">How the Eleven Documents Fit Together</a>
-    </li>
-    </ul>
-                </li>
+                  <li class="toctree-l1"><a class="" href="../contributing.md">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
               </ul>
       </div>
     </div>
@@ -101,7 +80,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Architecture</li>
+      <li class="breadcrumb-item active">ARM v3 — Detailed Architecture Reference</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/architecture.md" class="icon icon-github"> Edit on github</a>
     </li>
@@ -112,7 +91,51 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="arm-v3-detailed-architecture-reference">ARM v3 — Detailed Architecture Reference</h1>
-<p>A comprehensive, document-by-document reference covering all eleven files in <code>docs/arch/</code> on the <a href="https://github.com/shitwolfymakes/automatic-ripping-machine/tree/integration/all-prs"><code>integration/all-prs</code></a> branch, as of the architecture set dated 2026-04-18 (with later additions/updates noted where the source docs carry a different date). This is the detailed companion to the earlier condensed Architecture Summary — where that document orients, this one preserves the reasoning, field-level detail, and tradeoffs behind each decision.</p>
+<h2 id="quick-summary">Quick summary</h2>
+<p>ARM v3 is a <strong>multi-container, Python-first</strong> system built around a job/session state machine, per-drive ripper containers, and ad-hoc transcode containers. The Backend is the brain; everything else is a worker that talks to the Backend over REST + WebSocket.</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Image</th>
+<th>Lifetime</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UI</strong></td>
+<td><code>arm-ui</code></td>
+<td>Long-running</td>
+<td>SPA (Vite-built) served by nginx; consumes Backend API + WS</td>
+</tr>
+<tr>
+<td><strong>Backend</strong></td>
+<td><code>arm-backend</code></td>
+<td>Long-running</td>
+<td>FastAPI: job/session state machine, internet adapters, WS hub, spawns transcoders</td>
+</tr>
+<tr>
+<td><strong>Ripper</strong></td>
+<td><code>arm-ripper</code></td>
+<td>Long-running, one per drive</td>
+<td>Bound to a single <code>/dev/sr*</code>; identifies disc, rips to <code>/raw</code>, reports to Backend</td>
+</tr>
+<tr>
+<td><strong>Transcode</strong></td>
+<td><code>arm-transcode</code></td>
+<td>Ad-hoc, one per transcode</td>
+<td>Spawned by Backend; optional GPU pass-through; reports progress, exits</td>
+</tr>
+<tr>
+<td><strong>DB</strong></td>
+<td><code>postgres:18</code></td>
+<td>Long-running</td>
+<td>Source of truth for all state</td>
+</tr>
+</tbody>
+</table>
+<p>This page is a comprehensive, document-by-document reference covering all eleven architecture files in <code>docs/arch/</code> on the <a href="https://github.com/shitwolfymakes/automatic-ripping-machine/tree/integration/all-prs"><code>integration/all-prs</code></a> branch, as of the architecture set dated 2026-04-18 (with later additions/updates noted where the source docs carry a different date). This is the detailed companion to the earlier condensed Architecture Summary — where that document orients, this one preserves the reasoning, field-level detail, and tradeoffs behind each decision.</p>
 <table>
 <thead>
 <tr>
@@ -419,9 +442,6 @@
               
             </div>
           </div><footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../roadmap/" class="btn btn-neutral float-left" title="Roadmap"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-    </div>
 
   <hr/>
 
@@ -446,8 +466,6 @@
           <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
         </span>
     
-    
-      <span><a href="../roadmap/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
   </span>
