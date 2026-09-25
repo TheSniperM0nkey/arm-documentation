@@ -6,13 +6,17 @@ site_description: Development documentation for the Automatic Ripping Machine pr
 remote_branch: gh-pages
 remote_name: origin
 nav:
-  - Overview: index.md
-  - v3 Scope: v3scope.md
-  - Roadmap: roadmap.md
-  - Architecture: architecture.md
-  #- Development: development.md
-  #- Contributing: contributing.md
-  #- Changelog: changelog.md
+  - Overview: 
+    - Vision: index.md
+    - v3 Scope: v3scope.md
+    - Roadmap: roadmap.md
+  - Arch Doc Links:
+    - Architecture Summary: architecturesummary.md
+
+  - Contributing:
+    - Contributing: contributing.md
+    - AI Usage Policy: aiusagepolicy.md
+
 theme:
   name: readthedocs
   locale: en

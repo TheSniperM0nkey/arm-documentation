@@ -31,7 +31,7 @@ The defining moment was `2.0.0`\: a complete rewrite of the project in Python, w
 
 - **Language/runtime:** Python, designed to run headless and as a non\-root user.
 - **Packaging:** typically run via Docker.
-- **Web UI (`armui`):** a Flask \+ Bootstrap application added in `2.1`, backed by SQLite. It handles job monitoring, log viewing, a searchable job database, a persistent settings page (writing back to `arm.yaml`), and — since `2.2` — login/authentication for multiple users.
+- **Web UI (`armui`):** a Flask + Bootstrap application added in `2.1`, backed by SQLite. It handles job monitoring, log viewing, a searchable job database, a persistent settings page (writing back to `arm.yaml`), and — since `2.2` — login/authentication for multiple users.
 - **Ripping tools:** MakeMKV and HandBrake for video, `abcde` for audio.
 - **Metadata providers:** OMDb (original), with TMDB added later as an alternative for movies; MusicBrainz for CD identification.
 - **Notifications:** Apprise as the common layer, fanning out to most major chat/push services.
@@ -42,28 +42,41 @@ A.R.M. v2 is now in maintenance and not in active development. Current and Futur
 
 A.R.M. v3 is a ground up rewrite of the system to fix structural problems in v2 that a refactor couldn't solve, while keeping the same core promise: insert a disc, walk away, get a finished file.
 
+### Who v3 is for
+Single-admin homelab users. One person running ARM for their own household. It is not designed to be a shared service, a multi-tenant platform, or a commercial product.
+
+The user base in practice includes many data-hoarders — people who rip to preserve the raw bits, not just to feed a streaming app. This shapes retention defaults (keep raw forever) and session semantics (re-transcode from raw is a first-class operation).
+
 ### Problems v3 Is Built to Solve
 
-1. **Resource isolation.** In v2, ripping, UI, and transcoding share one process tree, so heavy work in one area starves the others. v3 separates these into services so concurrent rips and a transcode don't degrade the UI.
-2. **Batch-rip resumability.** In v2, a power loss mid-batch discards progress with no recovery path. v3 checkpoints finely enough that completed work survives a crash and unfinished work re-queues automatically on restart.
-3. **Sessions** (rip once, transcode many times with different presets) — v2 conflates ripping and transcoding into one irreversible pipeline; v3 separates them so a ripped disc can be re-transcoded later without re-ripping.
+1. **Resource isolation:** In v2, ripping, UI, and transcoding share one process tree, so heavy work in one area starves the others. v3 separates these into services so concurrent rips and a transcode don't degrade the UI.
+2. **Batch-rip resumability:** In v2, a power loss mid-batch discards progress with no recovery path. v3 checkpoints finely enough that completed work survives a crash and unfinished work re-queues automatically on restart.
+3. **Sessions:** In v2 ripping and transcoding is conflated into one irreversible pipeline; v3 separates them so a ripped disc can be re-transcoded later without re-ripping.
 
 ### Design Principles
 
-1. **Bits first, metadata second, transcode third** — a rip succeeds once bits are safely on disk; metadata and transcoding are independent stages that can fail, retry, or re\-run without touching the raw.
-2. **One service, one responsibility** — Ripper turns a disc into bytes; Backend owns state and talks to the internet; Transcode turns one raw file into one output; UI renders state and takes commands.
-3. **Backend is the single internet boundary** — Ripper and Transcode containers never call external services (TMDB/OMDB/MusicBrainz/Apprise/webhooks); all external calls and credentials live in the Backend.
-4. **Postgres is the source of truth; stdout is the source of logs** — durable state lives in Postgres; logs are structured JSON, no third persistence mechanism.
-5. **Crash\-safe by default** — every long-running operation is checkpointable; a stale "in-progress" row with no live worker signals "re-queue me."
-6. **No sacred cows** — a greenfield rebuild; any assumption inherited from v2 is open for re-decision from first principles.
+1. **Bits first, metadata second, transcode third:** The three stages are decoupled. A rip succeeds the moment the bits are safely on disk and recorded in the DB. Metadata enrichment and transcoding are independent downstream stages that can fail, retry, or be re-run without touching the raw.
+2. **One service, one responsibility:** Every container has a single reason to exist:
+    - The Ripper exists to turn a disc into bytes on disk.
+    - The Backend exists to own state and speak to the internet.
+    - The Transcode container exists to turn one raw into one output.
+    - The UI exists to render state and take commands.
+    - No service does "a little bit of the other guy's job."
+3. **Backend is the single internet boundary:** The Ripper and Transcode containers never talk to the internet. All external calls (TMDB/OMDB/MusicBrainz/Apprise/webhooks) originate from the Backend. This means workers are simpler to run (no API keys, no outbound firewall holes), and external credentials live in exactly one place.
+
+4. **Postgres is the source of truth; stdout is the source of logs:** Durable state lives in Postgres. Logs are structured JSON emitted to stdout and appended to a shared volume. We do not invent a third persistence mechanism for state, and we do not hide debug data behind a query language.
+5. **Crash\-safe by default:** Every long-running operation is checkpoint-able. A worker crash must not discard completed sub-work. A stale "in-progress" row with no live worker is the signal for "re-queue me."
+6. **No sacred cows:** This is a greenfield rebuild. Any assumption inherited from v2 is open for review. When in doubt, re-decide from first principles rather than preserve an old shape.
 
 ### Explicit Non-Goals for v3.0
 
-- No TrueNAS / iX Systems support.
-- No v2 → v3 data migration (v3 starts from a clean schema).
-- No multi-tenancy or RBAC — single admin only.
-- No Kubernetes/Helm — Docker Compose is the only supported deployment surface.
-- No in-backend transcoding — transcoding always runs in a dedicated ephemeral container.
+Explicit non-goals for v3.0 — not features that are not done yet, but features we have actively decided **not** to pursue:
+
+- **No TrueNAS / iX Systems support.** Not a supported target.
+- **No v2 → v3 data migration.** v2 stays on its own tag; v3 starts from a clean schema.
+- **No multi-tenancy / RBAC.** Target user is a single homelab hobbyist. One admin.
+- **No Kubernetes / Helm.** Docker Compose is the only supported deploy surface.
+- **No in-backend transcoding.** Transcode always runs in a dedicated ephemeral container.
 
 ### Success Criteria for v3.0
 

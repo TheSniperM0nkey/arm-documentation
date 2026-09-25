@@ -1,6 +1,18 @@
 # ARM v3 — Detailed Architecture Reference
 
-A comprehensive, document\-by\-document reference covering all eleven files in `docs/arch/` on the [`integration/all-prs`](https://github.com/shitwolfymakes/automatic-ripping-machine/tree/integration/all-prs) branch, as of the architecture set dated 2026\-04\-18 (with later additions/updates noted where the source docs carry a different date). This is the detailed companion to the earlier condensed Architecture Summary — where that document orients, this one preserves the reasoning, field\-level detail, and tradeoffs behind each decision.
+## Quick summary
+
+ARM v3 is a **multi-container, Python-first** system built around a job/session state machine, per-drive ripper containers, and ad-hoc transcode containers. The Backend is the brain; everything else is a worker that talks to the Backend over REST + WebSocket.
+
+| Service | Image | Lifetime | Role |
+|---|---|---|---|
+| **UI** | `arm-ui` | Long-running | SPA (Vite-built) served by nginx; consumes Backend API + WS |
+| **Backend** | `arm-backend` | Long-running | FastAPI: job/session state machine, internet adapters, WS hub, spawns transcoders |
+| **Ripper** | `arm-ripper` | Long-running, one per drive | Bound to a single `/dev/sr*`; identifies disc, rips to `/raw`, reports to Backend |
+| **Transcode** | `arm-transcode` | Ad-hoc, one per transcode | Spawned by Backend; optional GPU pass-through; reports progress, exits |
+| **DB** | `postgres:18` | Long-running | Source of truth for all state |
+
+This page is a comprehensive, document\-by\-document reference covering all eleven architecture files in `docs/arch/` on the [`integration/all-prs`](https://github.com/shitwolfymakes/automatic-ripping-machine/tree/integration/all-prs) branch, as of the architecture set dated 2026\-04\-18 (with later additions/updates noted where the source docs carry a different date). This is the detailed companion to the earlier condensed Architecture Summary — where that document orients, this one preserves the reasoning, field\-level detail, and tradeoffs behind each decision.
 
 | \# | Document | Covers |
 | --- | --- | --- |
