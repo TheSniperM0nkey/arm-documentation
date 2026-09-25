@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Architecture Summary - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Architecture Summary";
+        var mkdocs_page_input_path = "architecturesummary.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Arch Doc Links</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Architecture Summary</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#quick-summary">Quick summary</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#how-the-documents-fit-together">How the Documents Fit Together</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#00-vision-goals-and-principles">00 — Vision, Goals, and Principles</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#01-system-architecture-overview">01 — System Architecture Overview</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#02-job-lifecycle-crash-recovery">02 — Job Lifecycle &amp; Crash Recovery</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#03-protocol-rest-websocket-contract">03 — Protocol: REST + WebSocket Contract</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#04-data-model">04 — Data Model</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#05-cross-cutting-concerns">05 — Cross-Cutting Concerns</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#06-deployment">06 — Deployment</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#07-open-questions-deferred-decisions">07 — Open Questions &amp; Deferred Decisions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#08-v2-isolation-and-cutover-plan">08 — v2 Isolation and Cutover Plan</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#09-testing-philosophy-as-built">09 — Testing Philosophy (as-built)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-iso-source-ripping-proposed-design-only">10 — ISO-Source Ripping (proposed, design only)</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="" href="../contributing.md">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Arch Doc Links</li>
+      <li class="breadcrumb-item active">Architecture Summary</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/architecturesummary.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="arm-v3-architecture-documentation-summary">ARM v3 — Architecture Documentation Summary</h1>
+<p>This is a condensed summary of all eleven documents in <code>docs/arch/</code> on the <a href="https://github.com/shitwolfymakes/automatic-ripping-machine/tree/integration/all-prs"><code>integration/all-prs</code></a> branch. The full documents are the source of truth for implementation detail; this is an orientation guide to what's in each one and how they connect.</p>
+<h2 id="quick-summary">Quick summary</h2>
+<p>ARM v3 is a <strong>multi-container, Python-first</strong> system built around a job/session state machine, per-drive ripper containers, and ad-hoc transcode containers. The Backend is the brain; everything else is a worker that talks to the Backend over REST + WebSocket.</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Image</th>
+<th>Lifetime</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>UI</strong></td>
+<td><code>arm-ui</code></td>
+<td>Long-running</td>
+<td>SPA (Vite-built) served by nginx; consumes Backend API + WS</td>
+</tr>
+<tr>
+<td><strong>Backend</strong></td>
+<td><code>arm-backend</code></td>
+<td>Long-running</td>
+<td>FastAPI: job/session state machine, internet adapters, WS hub, spawns transcoders</td>
+</tr>
+<tr>
+<td><strong>Ripper</strong></td>
+<td><code>arm-ripper</code></td>
+<td>Long-running, one per drive</td>
+<td>Bound to a single <code>/dev/sr*</code>; identifies disc, rips to <code>/raw</code>, reports to Backend</td>
+</tr>
+<tr>
+<td><strong>Transcode</strong></td>
+<td><code>arm-transcode</code></td>
+<td>Ad-hoc, one per transcode</td>
+<td>Spawned by Backend; optional GPU pass-through; reports progress, exits</td>
+</tr>
+<tr>
+<td><strong>DB</strong></td>
+<td><code>postgres:18</code></td>
+<td>Long-running</td>
+<td>Source of truth for all state</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-the-documents-fit-together">How the Documents Fit Together</h2>
+<p>This section sets out how the documents all fit together to define the architecture of the Automatic Ripping Machine.</p>
+<ul>
+<li><strong>00</strong> sets the "why"; </li>
+<li><strong>01</strong> sets the "what" (topology); </li>
+<li><strong>02</strong>, <strong>03</strong>, and <strong>04</strong> are the operational core — lifecycle, wire contract, and schema — and cross-reference each other constantly (a session's output path template in 02 is a column in 04, resolved over the REST calls in 03)</li>
+<li><strong>05</strong> and 06 are the non-functional backbone that every service is built against regardless of feature;</li>
+<li><strong>07</strong> tracks what's deliberately still undecided;</li>
+<li><strong>08</strong> governs the meta-process of shipping this rebuild without breaking the existing release; </li>
+<li><strong>09</strong> documents engineering practice as it was actually built, superseding the original plan in 05; and </li>
+<li><strong>10</strong> is the one forward-looking proposal in the set, explicitly labeled as not yet real.</li>
+</ul>
+<h2 id="00-vision-goals-and-principles">00 — Vision, Goals, and Principles</h2>
+<p>This is covered in the <a href="../">Overview</a> section of this site.</p>
+<p>Defines who v3 is for (single-admin homelab users, often "data-hoarders" who rip to preserve raw bits), and the two structural v2 problems that justified a rebuild rather than a refactor: 
+- Shared-process resource contention between ripping/transcoding/UI, 
+- No recovery path when a batch rip is interrupted. </p>
+<p>A third goal, Sessions (rip once, transcode many times), rides alongside these core structural issues in v2. </p>
+<p>This document lays out the six design principles behind v3:
+- Bits-first pipeline staging, 
+- One-service-one-responsibility, 
+- Backend as the sole internet boundary, 
+- Postgres as the single source of truth, 
+- Crash-safety by default,
+- "No sacred cows" inherited from v2</p>
+<p>Plus the concrete success criteria that define a shippable v3.0.</p>
+<h2 id="01-system-architecture-overview">01 — System Architecture Overview</h2>
+<p>The container topology: </p>
+<ul>
+<li>
+<p>Vue SPA (<code>arm-ui</code>, stateless, nginx-served) talks over HTTPS/WSS to <code>arm-backend</code> (FastAPI, the only service holding durable state or internet access), which spawns one long-running <code>arm-ripper-&lt;serial&gt;</code> container per enrolled optical drive, and one ephemeral <code>arm-transcode-&lt;uuid&gt;</code> container per transcode job via the Docker socket.</p>
+</li>
+<li>
+<p><code>arm-db</code> is Postgres 18, read/written by every service. </p>
+</li>
+<li>
+<p>Shared volumes (<code>/raw</code>, <code>/media</code>, <code>/logs</code>) are how rippers and transcoders hand off files; all coordination otherwise goes through Backend.</p>
+</li>
+</ul>
+<p>The full data flow end to end: </p>
+<p>Disc insertion → drive-status polling detects it → ripper scans and calls Backend to identify (TMDB/OMDB/MusicBrainz) → on a hit the job is <code>identified</code>, on a miss it either blocks (<code>awaiting_user_id</code>, default) or — in opt-in placeholder mode — rips immediately and defers identity → ripping proceeds per-track with WS progress → on completion the disc ejects and an auto-session may queue or it will wait for the user to select a session → Backend spawns a transcode container → output lands in <code>/media</code>. </p>
+<p>Also documents the drive-polling mechanism (<code>ioctl(CDROM_DRIVE_STATUS)</code> every 2s, no udev dependency), and the image, replica count, inputs/outputs, and state of each service.</p>
+<h2 id="02-job-lifecycle-crash-recovery">02 — Job Lifecycle &amp; Crash Recovery</h2>
+<p>This is the document behind one of the project's two main objectives. It defines the four runtime entities:</p>
+<ul>
+<li><strong>Job</strong> (one disc insertion), </li>
+<li><strong>Track</strong> (the checkpoint unit: one title/song/dump), </li>
+<li><strong>Session Application</strong> (the durable record of "apply session S to job J"), and </li>
+<li><strong>Transcode Task</strong> (one raw-track-to-output operation)</li>
+</ul>
+<p>It also includes the reusable <strong>Session</strong> template that composes a rip preset, a transcode preset, and an output-path convention.</p>
+<p>The document defines the state machines for <strong>jobs</strong> (<code>created → identified → ripping → ripped | ripped_partial</code>, with an <code>awaiting_user_id</code> detour and <code>abandoned</code>/<code>failed</code> terminal states) and <strong>tracks</strong> (<code>queued → in_progress → done | failed</code>, no per-track claim needed since one ripper owns one drive). </p>
+<p>Crash recovery is deliberately coarse: <strong>an interrupted rip restarts entirely from scratch</strong> — every track resets to <code>queued</code>, <code>/raw/&lt;job_id&gt;/</code> is wiped, MakeMKV reruns. This is because MakeMKV can't resume mid-title. "Done" in the DB doesn't guarantee fsync'd durability, and interruptions are rare enough that the cost is acceptable. Two paths trigger this: a Backend-startup sweep (catches jobs stuck <code>ripping</code> when Backend was down) and a ripper-startup probe (catches the reverse). </p>
+<p>Transcode tasks, by contrast, use real per-task claims and heartbeats, because multiple ephemeral transcoders genuinely compete for queued work and a multi-hour transcode batch losing all progress is a worse trade.</p>
+<p>This document also explains why sessions were split into three tables (rip preset / transcode preset / session) versus v2's single bundled concept to support home-movie rips, ISO dumps, and multiple encodings from one source; the full output-path/naming convention for movies, TV, and music (deliberately mechanical, "honest" names — no guessed episode numbers); and the concurrency-safety mechanisms (atomic <code>.arm-inprogress</code> → rename, apply-time collision checks, a DB-level partial unique index) that prevent two sessions from clobbering each other's output files.</p>
+<h2 id="03-protocol-rest-websocket-contract">03 — Protocol: REST + WebSocket Contract</h2>
+<p>Two transport methods are allowed between services: <strong>REST</strong> (JSON, request/response), used for anything that must durably land (state transitions, CRUD), and <strong>WebSocket</strong> (used only for streaming live progress and async push). There is no direct DB access between services, no file-based IPC. All schemas are Pydantic models in <code>packages/arm_common/schemas/</code> are exported as OpenAPI and imported by both producer and consumer so a protocol change is one PR.</p>
+<p>This document covers the full REST surface for three client relationships:</p>
+<ul>
+<li><strong>Ripper ↔ Backend</strong> (register, identify, resume-after-crash, per-track complete/fail, job-complete), </li>
+<li><strong>UI ↔ Backend</strong> (auth, config, drives, jobs, sessions, transcodes, logs),</li>
+<li><strong>Transcoder ↔ Backend</strong> (register, claim, heartbeat, complete/fail)</li>
+</ul>
+<p>It also covers the single WebSocket endpoint's topic list (per-job progress, typed events, per-drive command channels, per-task command channels), including that progress ticks are intentionally never persisted (fire-and-forget telemetry, throttled to 1 Hz) whilst typed events are.</p>
+<p>The document explains the REST-vs-WS split as two different cost models: state transitions must be acknowledged and retried, progress can simply be superseded by the next tick. Inter-worker calls (rippers and transcoders never talk to each other) and Backend-initiated calls to rippers (Backend pushes WS events instead; rippers are never HTTP servers) are explicitly ruled out.</p>
+<h2 id="04-data-model">04 — Data Model</h2>
+<p>This document covers the ARM data model Postgres 18 is the source of truth. All durable state lives here. There is no SQLite fallback, and no sidecar state stores.</p>
+<p>The document sketches the logical data model. Exact column types, indexes, and constraints land in the first Alembic migration — this is the shape, not the DDL.</p>
+<p><strong>Conventions:</strong></p>
+<ul>
+<li>Primary keys are ULIDs (text, lexicographically sortable) prefixed with the entity name: <code>job_01HXYZ…</code>, <code>track_01HXYZ…</code>. This makes log lines and URLs legible.</li>
+<li>Every table has <code>created_at</code> and <code>updated_at</code> (<code>TIMESTAMPTZ NOT NULL DEFAULT now()</code>).</li>
+<li>Soft-delete is avoided. If a row needs to hide, a status column handles it.</li>
+<li>Foreign keys are enforced at the DB layer; no ORM-only relationships.</li>
+<li>Enums are stored as plain <code>VARCHAR</code> columns; the <code>StrEnum</code> class in <a href="../../packages/arm_common/arm_common/enums.py">packages/arm_common/arm_common/enums.py</a> is the source of truth and validation runs at write time through the SQLModel/Pydantic layer. No native Postgres <code>CREATE TYPE</code> enums. Rationale: adding/removing/renaming values via <code>ALTER TYPE</code> is awkward in transactional migrations, and several schema-diff tools (Atlas, Bytebase) gate enum-diff features behind paid tiers — <code>VARCHAR</code> keeps the door open to those tools on their free tiers. The tradeoff we accept: a bad value inserted by raw <code>psql</code> or a rogue migration is not caught by the DB; the app is the only guardrail. This is acceptable for a single-admin homelab system.</li>
+</ul>
+<p>The document goes on to Walk through each core table: 
+- <code>users</code> (single admin today, schema ready for more), 
+- <code>config</code> (singleton runtime settings, plaintext secrets), 
+- <code>drives</code> (one row per detected optical drive, ripper container created on enroll), 
+- <code>jobs</code> and <code>tracks</code> (the rip-side state machine, including forward-compatible-but-unpopulated <code>disc_fingerprint</code>/<code>aacs_disc_id</code> columns reserved for a future community lookup database), 
+- <code>rip_presets</code> / <code>transcode_presets</code> / <code>sessions</code> three-table split,
+- <code>transcode_tasks</code> (the one table that does carry claim/heartbeat columns, since ephemeral transcoders genuinely compete for work). </p>
+<p>Each table's rationale is given alongside its fields, not just the shape.</p>
+<h2 id="05-cross-cutting-concerns">05 — Cross-Cutting Concerns</h2>
+<p>This document covers the things that touch every service: configuration, authentication, secrets, logging, observability, code quality, testing, and the shared Python package.</p>
+<ul>
+<li><strong>Repo layout</strong> defines ARM as a monorepo with a shared pyton package at the repository root. A key property of the design is that a single PR can change a Pydantic schema in arm_common and its producers + consumers in services/*. Protocol changes are always atomic.</li>
+<li><strong>Configuration</strong> is two-tier: bootstrap values in <code>.env</code> (DB credentials, the shared service token, PUID/PGID/CDROM_GID), and everything else — API keys, retention policy, Apprise URLs — in the <code>config</code> DB table, edited from the UI. No YAML files (the v2 <code>arm.yaml</code> pattern is retired).</li>
+<li><strong>Auth</strong> is JWT-based (not cookies, to sidestep consent-law complications behind arbitrary reverse proxies), argon2id-hashed passwords, a forced password change on first login, 7-day non-refreshing tokens, and no MFA — all explicitly scoped to "single-user homelab." Service-to-service auth uses one shared long-lived bearer token, with authorization scoping at the endpoint level as the mitigation for the shared-credential tradeoff.</li>
+<li><strong>Transport is TLS everywhere, no exceptions</strong>  - an internal CA generated once per install signs leaf certs for every service, including Postgres itself; the deployment is explicitly LAN-only and never internet-exposed, which is why the document deliberately rules out Let's Encrypt.</li>
+<li><strong>Secrets</strong> (third-party API keys) are stored in plaintext DB rows — Postgres dumps must be treated as sensitive — and are redacted from logs.</li>
+<li><strong>Logging</strong> is structured JSON to stdout plus a per-service rotated file, with a per-job log slice and a bug-report zip endpoint; there is no metrics/tracing stack in v3.0 by design (the typed <code>events</code> table is the nearest thing).</li>
+<li><strong>Notifications</strong> run through Apprise with native pass-through URLs — a deliberate rejection of v2's hand-maintained per-service dictionary, which went stale as new notification services appeared.</li>
+<li><strong>Code quality</strong> is one pre-commit stack (ruff + strict mypy) gating all four Python packages equally.</li>
+</ul>
+<h2 id="06-deployment">06 — Deployment</h2>
+<p>Docker Compose on Linux (Engine ≥ 24, Compose v2 ≥ 2.20) is the <strong>only</strong> supported target — Unraid, Synology, other NAS-appliance GUIs, TrueNAS, and Kubernetes are explicitly out of scope (a decision finalized 2026-06-05). </p>
+<p>Everything installs under a single prefix (<code>~/arm/</code> by default) with a fixed layout (<code>.env</code>, <code>docker-compose.yml</code>, <code>certs/</code>, <code>db/</code>, <code>raw/</code>, <code>media/</code>, <code>logs/</code>) — nothing compiles on the host, images are pulled pre-built.</p>
+<p>This document covers: 
+- The build chain (fresh images on upstream bases, no inherited v2 <code>arm-dependencies</code> image or <code>phusion/baseimage</code>, <code>tini</code> as PID 1 for zombie-reaping, digest-pinned bases, SBOM + Cosign-signed images, weekly rebuilds for security patches); 
+- The compose topology (rippers and transcoders are <em>not</em> declared as compose services — the backend creates ripper containers dynamically on drive enrollment and transcode containers per job, both over the Docker socket, which is why they sit outside the <code>docker compose</code> project namespace); 
+- The SCSI-generic device-pairing requirement MakeMKV needs;
+- Why host-side auto-mount must be disabled via a udev rule for eject to work on desktop hosts; 
+- The full <code>PUID</code>/<code>PGID</code> file-ownership model (and the hard rule that v3 never recursively <code>chown</code>s a user-mounted volume, a direct reaction to real v2 data-loss bugs); 
+- The privilege matrix (nothing runs <code>--privileged</code>); 
+- Install/update/uninstall/backup procedures; and
+- The platform-specific notes ruling out ripping under Docker Desktop on macOS/Windows.</p>
+<h2 id="07-open-questions-deferred-decisions">07 — Open Questions &amp; Deferred Decisions</h2>
+<p>This document is deliberately short. Most first-draft open questions have been resolved and folded into the main docs. The one live entry (OQ-1) is whether the current DB-as-queue pattern (<code>SELECT … FOR UPDATE SKIP LOCKED</code>) should eventually be replaced with a real broker (Redis+RQ, NATS). This has been explicitly deferred until a concrete pain point emerges, since it's adequate for the expected scale of 1–4 drives / 1–4 concurrent transcodes. </p>
+<p>The document also states the process for resolving future OQs: fold the decision into the relevant doc and delete the entry, relying on git history rather than an archive folder.</p>
+<h2 id="08-v2-isolation-and-cutover-plan">08 — v2 Isolation and Cutover Plan</h2>
+<p>This is the process document governing how v3 was built without destabilizing v2. It defines the isolation rule (v3 developed inside its own subtree, no v2 file touched during development), how the two stacks coexist on one host (distinct compose project namespaces, <code>armv3-</code> vs <code>arm-</code> container prefixes, noting there is one unavoidable resource conflict if both try to bind the same optical drive at once), and the mechanical steps of the eventual cutover PR: move v3 to repo root, retire v2 files, rewrite user-facing docs, retire v2 CI workflows. </p>
+<p>The document also explicitly states what the cutover is <em>not</em> — not a data migration, not a branch rename, not a soft/gradual migration — and lists the readiness criteria that gate it (fresh-install-to-login under 5 minutes, a real disc-ISO end-to-end rip, a crash-recovery drill pass, at least one real BD/DVD/CD rip on contributor hardware, green CI, and final maintainer sign-off).</p>
+<h2 id="09-testing-philosophy-as-built">09 — Testing Philosophy (as-built)</h2>
+<p>This document ecords what was actually built, which diverged from the original plan in 05. Five principles anchor it: 
+1. Tests run with zero infrastructure (<code>uv run pytest</code>, no Docker/Postgres/network), 
+2. Coverage is a floor for confidence rather than a vanity metric (100% Backend statement coverage, with exclusions required to carry a written justification), 
+3. Only true I/O boundaries are faked — never the code under test, 
+4. Speed is a feature (the 600+-test Backend suite runs in \~15s), 
+5. Determinism beats fidelity where they conflict (GPU/Docker-socket-dependent paths are pinned to one deterministic branch rather than tested against real hardware in CI).</p>
+<p>Two tiers actually exist for the Backend: 
+- <strong>Tier 1:</strong> fast tests against an in-memory fake SQLAlchemy session for exhaustive router/logic coverage,
+- <strong>Tier 2</strong> a real-DB end-to-end harness that boots the actual FastAPI app against file-backed SQLite (standing in for Postgres, with the explicit accepted gap that Postgres-only dialect features and real Alembic migrations aren't covered here).</p>
+<p>A <strong>contract tier</strong> (OpenAPI-drift checking, per-endpoint request/response contract tests) and a <strong>Big Buck Bunny integration rig</strong> (a real, legally-redistributable ISO fixture for testing the actual rip pipeline) are specified but not yet built as of this document — the closest existing approximation is in <code>devtools/iso-smoke.sh</code>.</p>
+<h2 id="10-iso-source-ripping-proposed-design-only">10 — ISO-Source Ripping (proposed, design only)</h2>
+<p>This is the only document in this set marked explicitly <strong>not built</strong>. </p>
+<p>It distinguishes between "<strong>ISO as output</strong>" (already shipped — <code>rip_presets.output_mode='iso'</code> dumps a physical disc to an image file) from "<strong>ISO as source</strong>" (ripping <em>from</em> an existing <code>.iso</code> file through the normal pipeline, no physical disc involved) — this document is only about the latter.</p>
+<p>The proposed shape reuses two things nearly verbatim: the existing scan/identify/rip/transcode pipeline (already source-blind — it routes <code>iso:&lt;path&gt;</code> vs <code>dev:&lt;path&gt;</code> at the scan layer) and the existing ephemeral-container spawn mechanism already used for transcoding, rather than inventing a new long-running <code>arm-ripper-iso</code> daemon.</p>
+<p>Today, ISO-source ripping exists only as an internal test hook (<code>ARM_MANUAL_TRIGGER_ISO</code>) that ripped once on startup and then idled — the opposite of the ephemeral design being proposed — which is why <code>devtools/iso-smoke.sh</code> had to grow into a large hand-rolled orchestrator around it. The eventual front door (UI file upload spawning an ephemeral ISO ripper per upload) is explicitly deferred; this document locks in the architecture, not the upload UX.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../roadmap/" class="btn btn-neutral float-left" title="Roadmap"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../aiusagepolicy/" class="btn btn-neutral float-right" title="AI Usage Policy">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../roadmap/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../aiusagepolicy/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
