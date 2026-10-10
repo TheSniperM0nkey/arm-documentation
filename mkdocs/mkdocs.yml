@@ -10,9 +10,19 @@ nav:
     - Vision: index.md
     - v3 Scope: v3scope.md
     - Roadmap: roadmap.md
-  - Arch Doc Links:
+  - Architecture:
     - Architecture Summary: architecturesummary.md
-
+    - 00. Vision: 00-vision.md
+    - 01. Architecture: 01-architecture.md
+    - 02. Job Lifecycle: 02-job-lifecycle.md
+    - 03. Protocol: 03-protocol.md
+    - 04. Data Model: 04-data-model.md
+    - 05. Cross Cutting: 05-cross-cutting.md
+    - 06. Deployment: 06-deployment.md
+    - 07 Open Questions: 07-open-questions.md
+    - 08. v2 Isolation and Cutover: 08-v2-isolation-and-cutover.md
+    - 09. Testing: 09-testing.md
+    - 10. ISO Source Ripping: 10-iso-source-ripping.md
   - Contributing:
     - Contributing: contributing.md
     - AI Usage Policy: aiusagepolicy.md
