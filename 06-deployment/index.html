@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>06. Deployment - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "06. Deployment";
+        var mkdocs_page_input_path = "06-deployment.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../00-vision/">00. Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../01-architecture/">01. Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02-job-lifecycle/">02. Job Lifecycle</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05-cross-cutting/">05. Cross Cutting</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">06. Deployment</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#supported-targets">Supported targets</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#explicitly-not-supported">Explicitly NOT supported</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#install-prefix-and-layout">Install prefix and layout</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build-chain">Build chain</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#compose-topology">Compose topology</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#scsi-generic-pairing">SCSI-generic pairing</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#host-side-auto-mount-must-be-disabled">Host-side auto-mount must be disabled</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#why-one-ripper-service-per-drive">Why one ripper service per drive</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#environment-file">Environment file</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#file-ownership">File ownership</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#privilege-matrix">Privilege matrix</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#install">Install</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#update-upgrade">Update / upgrade</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#uninstall">Uninstall</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#backup">Backup</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#platform-specific-notes">Platform-specific notes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09-testing/">09. Testing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10-iso-source-ripping/">10. ISO Source Ripping</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">06. Deployment</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/06-deployment.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="06-deployment">06 — Deployment</h1>
+<p>Docker Compose is the one and only supported deploy target for v3.</p>
+<h2 id="supported-targets">Supported targets</h2>
+<ul>
+<li>Any Linux host running Docker Engine ≥ 24 and Compose v2 ≥ 2.20 (Ubuntu, Debian, Fedora, Arch, …). This is the <strong>one and only</strong> supported target for v3.0; container deployment is distro-agnostic.</li>
+</ul>
+<h2 id="explicitly-not-supported">Explicitly NOT supported</h2>
+<ul>
+<li>Unraid, Synology DSM, QNAP, and other NAS-appliance container GUIs. They run stock Docker, so the generic Linux + Compose path may happen to work, but it is <strong>untested and unsupported</strong> for v3.0 — deploy via the documented <code>install.sh</code> + <code>docker compose</code> path or not at all. (Dropped 2026-06-05.)</li>
+<li>TrueNAS / iX Systems. Not a goal. Do not file bugs against it.</li>
+<li>Kubernetes / Helm.</li>
+<li>Docker Desktop on macOS/Windows <strong>for ripping</strong>. Internal SATA optical drives cannot be passed to the WSL2/macOS VM; USB drives via <code>usbipd-win</code> may work but are not tested. Windows and macOS users can still run the UI + transcoder stack as a library-management frontend (PUID/PGID works correctly on WSL2-native paths, named volumes, and SMB mounts — see "File ownership" below). NTFS bind mounts from <code>C:\...</code> are unsupported: the translation layer fakes ownership and ignores <code>chown</code>, so PUID becomes cosmetic.</li>
+<li>Podman (may work by accident; not tested).</li>
+</ul>
+<h2 id="install-prefix-and-layout">Install prefix and layout</h2>
+<p>The install script (see "Install" below) drops everything under a single prefix, <strong><code>~/arm/</code> by default</strong>. The user never clones the repo, never runs a build, never reads source. The stack is entirely image-based.</p>
+<pre><code>~/arm/
+├── .env                            # 0600 — generated; user edits optional fields
+├── docker-compose.yml              # 0644 — generated per host (one ripper service per detected drive)
+├── certs/                          # 0700
+│   ├── arm-ca.key                  # 0400 — CA private key; NEVER mounted into a container
+│   ├── arm-ca.crt                  # 0444 — mounted read-only into every service
+│   ├── arm-backend.{key,crt}       # leaf for Backend
+│   ├── arm-ui.{key,crt}            # leaf for UI nginx
+│   └── arm-ripper-sr{N}.{key,crt}  # one leaf per detected optical drive
+├── db/                             # Postgres data (bind-mount)
+├── logs/                           # shared logs (PUID:PGID)
+├── raw/                            # rip output (PUID:PGID, 2775 setgid)
+└── media/                          # transcoded library (PUID:PGID, 2775 setgid)
+</code></pre>
+<p>The user runs the stack from this directory: <code>cd ~/arm &amp;&amp; docker compose up -d</code>. All bind-mounts in the generated compose are relative (<code>./certs/...</code>, <code>./raw</code>, etc.), so moving <code>~/arm/</code> to <code>/srv/arm/</code> or <code>/mnt/tank/arm/</code> is a matter of moving the directory — nothing is hard-coded to <code>$HOME</code>.</p>
+<h2 id="build-chain">Build chain</h2>
+<p>v3 images are built fresh on upstream bases. They do <strong>not</strong> derive from the v2 <code>arm-dependencies</code> image, do <strong>not</strong> pull from the <code>arm-dependencies</code> submodule, and do <strong>not</strong> inherit <code>phusion/baseimage</code>.</p>
+<ul>
+<li><strong>No <code>arm-dependencies</code>.</strong> That image existed to bake HandBrake / MakeMKV / libdvd-pkg on top of a shared phusion base for the v2 all-in-one container. v3 splits those workloads across separate images (only <code>arm-ripper</code> and <code>arm-transcode</code> need MakeMKV/HandBrake), so the shared dependency layer isn't shared enough to justify a submodule. The <code>arm-dependencies</code> submodule stays in the repo untouched through v3 development and is deleted in the cutover PR — see <a href="../08-v2-isolation-and-cutover/">08-v2-isolation-and-cutover.md</a>.</li>
+<li><strong>No <code>phusion/baseimage</code>.</strong> phusion was adopted in v2 to get multi-service supervision (<code>/sbin/my_init</code> + <code>/etc/service/</code> runit) inside one container. v3's topology is one long-running process per container (UI = nginx, Backend = uvicorn, Ripper = the drive poller, Transcode = HandBrake — all PID-1-appropriate), so the entire reason phusion was chosen no longer applies. Dropping it removes a stack of v2 friction: the UID-unsettable limitation and its UID/GID remap dance, the <code>start_udev.sh</code> "job control turned off" noise in every bug report, the ~1 GB base-image bloat, and the two-repo version-bump tax that the submodule coupling created. Replacement bases are per service:</li>
+<li><code>arm-ui</code> → <code>nginx:alpine</code>, PID 1 = the nginx master (handles signals natively, no grandchild forks).</li>
+<li><code>arm-backend</code> → <code>python:3.14-slim-bookworm</code>, PID 1 = <code>tini</code> → <code>uvicorn</code>.</li>
+<li><code>arm-ripper</code> → <code>python:3.14-slim-bookworm</code>, PID 1 = <code>tini</code> → poller.</li>
+<li><code>arm-transcode</code> → <code>python:3.14-slim-bookworm</code>, PID 1 = <code>tini</code> → HandBrake wrapper.</li>
+</ul>
+<p><code>tini</code> is baked into the Python images rather than relying on <code>docker run --init</code>, since not every Docker UI or orchestrator consistently surfaces that flag. It reaps the zombie <code>makemkvcon</code> / <code>HandBrakeCLI</code> / <code>ffmpeg</code> subprocesses the ripper and transcode containers fork. The UI spawns no grandchildren, so nginx as PID 1 is sufficient. The common PUID-remap + CA-merge + privilege-drop logic is a ~25-line <code>docker-entrypoint.sh</code> stored at <code>services/_common/docker-entrypoint.sh</code> and <code>COPY</code>ed into each Python image — a shared script, deliberately not a shared base image (a shared base was the <code>arm-dependencies</code> coupling we left behind). Hardened vendor bases (Chainguard, distroless, Bitnami Secure, Red Hat UBI Micro) were considered and rejected: paid tiers introduce a gated supply chain at odds with anonymous <code>docker pull</code> distribution; free/distroless tiers have no shell, which breaks the runtime CA merge + PUID remap + <code>gosu</code> pattern; and the threat model (LAN-only, internal CA, no internet-exposed services) doesn't justify the tradeoff. Supply-chain hygiene is added on top of the minimal bases instead (see the next bullet).
+- <strong>Supply-chain hygiene.</strong> Minimal bases without vendor hardening means hardening is done at publish time with free open-source tooling:
+  - <strong>Pin bases by digest.</strong> Dockerfiles reference <code>FROM python:3.14-slim-bookworm@sha256:...</code>, not floating tags. Renovate (or Dependabot) opens a PR when the upstream digest for the pinned tag changes.
+  - <strong>SBOM per image.</strong> <code>syft</code> generates an SPDX SBOM at build time; <code>cosign attach sbom</code> publishes it alongside the image in the registry.
+  - <strong>Cosign-signed images.</strong> Every published image is signed via Sigstore's keyless flow (OIDC from the GitHub Actions runner → short-lived Fulcio cert → Rekor transparency log). Users can verify with <code>cosign verify docker.io/automaticrippingmachine/arm-&lt;service&gt;:v3.x.y --certificate-identity=... --certificate-oidc-issuer=https://token.actions.githubusercontent.com</code>. No long-lived signing keys to manage.
+  - <strong>Weekly base rebuild.</strong> A scheduled CI job rebuilds each image weekly on its current tag so Debian's security updates land without waiting for the next ARM release.
+- <strong>Each service has its own Dockerfile under <code>services/&lt;service&gt;/Dockerfile</code>.</strong> Shared Python code (schemas, clients) lives in <code>packages/arm_common/</code> and is installed into each image by the build, not mounted at runtime — there is no v2-style <code>PYTHONPATH=/opt/arm</code> shim.
+- <strong>Nothing compiles on the host.</strong> The installer (see <a href="#install">§ Install</a>) only pulls pinned images from <code>docker.io/automaticrippingmachine/</code>. Contributors building locally use <code>docker compose -f docker-compose.yml build</code>; end users never do.</p>
+<h2 id="compose-topology">Compose topology</h2>
+<p>The generated <code>~/arm/docker-compose.yml</code> references pinned images from <code>docker.io/automaticrippingmachine/</code> and bind-mounts paths under its own directory. No <code>build:</code> directives; nothing is compiled on the host.</p>
+<pre><code class="language-yaml">name: armv3   # compose project name; keeps container/volume names distinct from v2
+
+services:
+  arm-db:
+    image: postgres:18
+    container_name: armv3-db
+    restart: unless-stopped
+    # Entrypoint wrapper copies the bind-mounted leaf into a postgres-owned
+    # location with mode 0600. Postgres refuses ssl_key_file otherwise.
+    entrypoint:
+      - bash
+      - -c
+      - |
+        install -o postgres -g postgres -m 0600 /etc/ssl/arm/tls.key /tmp/pg.key
+        install -o postgres -g postgres -m 0644 /etc/ssl/arm/tls.crt /tmp/pg.crt
+        exec docker-entrypoint.sh postgres \
+          -c ssl=on \
+          -c ssl_cert_file=/tmp/pg.crt \
+          -c ssl_key_file=/tmp/pg.key \
+          -c ssl_ca_file=/etc/ssl/arm/arm-ca.crt
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./certs/arm-ca.crt:/etc/ssl/arm/arm-ca.crt:ro
+      - ./certs/arm-db.crt:/etc/ssl/arm/tls.crt:ro
+      - ./certs/arm-db.key:/etc/ssl/arm/tls.key:ro
+
+  arm-backend:
+    image: docker.io/automaticrippingmachine/arm-backend:v3.0.0
+    container_name: armv3-backend
+    restart: unless-stopped
+    depends_on: [arm-db]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@arm-db:5432/${POSTGRES_DB}?sslmode=verify-full&amp;sslrootcert=/etc/ssl/arm/arm-ca.crt
+      ARM_SERVICE_TOKEN: ${ARM_SERVICE_TOKEN}
+      ARM_LOG_LEVEL: ${ARM_LOG_LEVEL:-info}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+    volumes:
+      - ./raw:/raw
+      - ./media:/media
+      - ./logs:/logs
+      - ./certs/arm-ca.crt:/etc/ssl/arm/arm-ca.crt:ro
+      - ./certs/arm-backend.crt:/etc/ssl/arm/tls.crt:ro
+      - ./certs/arm-backend.key:/etc/ssl/arm/tls.key:ro
+      - /var/run/docker.sock:/var/run/docker.sock   # for spawning arm-transcode
+
+  arm-ui:
+    image: docker.io/automaticrippingmachine/arm-ui:v3.0.0
+    container_name: armv3-ui
+    restart: unless-stopped
+    depends_on: [arm-backend]
+    ports:
+      - &quot;8081:443&quot;   # UI over TLS
+    volumes:
+      - ./certs/arm-ca.crt:/etc/ssl/arm/arm-ca.crt:ro
+      - ./certs/arm-ui.crt:/etc/ssl/arm/tls.crt:ro
+      - ./certs/arm-ui.key:/etc/ssl/arm/tls.key:ro
+
+  arm-ripper-sr0:
+    image: docker.io/automaticrippingmachine/arm-ripper:v3.0.0
+    container_name: armv3-ripper-sr0
+    restart: unless-stopped
+    depends_on: [arm-backend]
+    devices:
+      - &quot;/dev/sr0:/dev/sr0&quot;
+      - &quot;/dev/sgN:/dev/sgN&quot;  # matching SCSI-generic node — see &quot;SCSI-generic pairing&quot; below
+    group_add:
+      - &quot;${CDROM_GID:-44}&quot;   # host's optical group GID so PUID-dropped process can read /dev/sr0
+    environment:
+      ARM_DRIVE_DEV: /dev/sr0
+      ARM_BACKEND_URL: https://arm-backend:8443
+      ARM_SERVICE_TOKEN: ${ARM_SERVICE_TOKEN}
+      ARM_LOG_LEVEL: ${ARM_LOG_LEVEL:-info}
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+    volumes:
+      - ./raw:/raw
+      - ./logs:/logs
+      - ./certs/arm-ca.crt:/etc/ssl/arm/arm-ca.crt:ro
+      - ./certs/arm-ripper-sr0.crt:/etc/ssl/arm/tls.crt:ro
+      - ./certs/arm-ripper-sr0.key:/etc/ssl/arm/tls.key:ro
+
+  # One arm-ripper-srN block per detected drive — emitted by the installer,
+  # not hand-edited. Rerun install.sh after adding a new drive.
+</code></pre>
+<p>The <code>armv3-</code> prefix on container names and <code>name: armv3</code> project namespace guarantee zero collision with v2 containers (which use <code>arm-</code> names) so <code>docker compose ls</code>, <code>docker compose down</code>, and <code>docker volume ls</code> all show v3 and v2 as distinct projects.</p>
+<p>Each service container, on startup, copies the mounted <code>/etc/ssl/arm/arm-ca.crt</code> into <code>/usr/local/share/ca-certificates/</code> and runs <code>update-ca-certificates</code>. This merges the per-install internal CA with the base image's Mozilla root bundle, so outbound HTTPS (TMDB, OMDB, Apprise) verifies against public roots and inbound/intra-compose HTTPS verifies against the internal CA — all via the default system trust store, no per-client <code>verify=</code> plumbing in application code. See <a href="../05-cross-cutting/#transport-tls">05-cross-cutting.md § Transport (TLS)</a> for the full cert layout and rationale.</p>
+<p>Note that v2 may be simultaneously bound to <code>/dev/sr0</code>. If you want to run a real v3 rip, stop v2 first — the kernel permits multiple containers to map the same device but MakeMKV won't play nicely with the disc being used by two processes. This is the one unavoidable resource conflict and it only matters during the transition period.</p>
+<p>Transcode services are NOT declared in compose — they are spawned dynamically by the Backend via Docker socket.</p>
+<h3 id="scsi-generic-pairing">SCSI-generic pairing</h3>
+<p>Each ripper container needs <strong>both</strong> the block device (<code>/dev/srN</code>) <strong>and</strong> its matching SCSI-generic node (<code>/dev/sgM</code>). MakeMKV enumerates drives via SG ioctls, not by opening the block device — without the sg node, <code>makemkvcon info</code> returns <code>Unknown device - '/dev/srN'</code> and zero titles. The ripper's scan dispatcher silently falls through to the data-disc fallback in that case, so the failure mode is "every disc looks unidentifiable" rather than a clean error.</p>
+<p>The pairing isn't lexicographic — <code>sr0</code> does <strong>not</strong> automatically pair with <code>sg0</code>. Find the matching node from the kernel device tree:</p>
+<pre><code class="language-sh">ls /sys/class/block/sr0/device/scsi_generic/   # → e.g. &quot;sg5&quot;
+</code></pre>
+<p>The installer (<a href="../../install.sh">install.sh</a>) auto-detects this per drive and emits the right <code>devices:</code> entries. For contributors running from a checkout, <a href="../../devtools/setup-dev.sh">devtools/setup-dev.sh</a> does the same: it copies the committed <a href="../../docker-compose.yml.example">docker-compose.yml.example</a> template to a gitignored <code>docker-compose.yml</code> (same split as <code>.env</code> / <code>.env.example</code>) and splices the ripper services into its generated region (between the <code>&gt;&gt;&gt;/&lt;&lt;&lt; arm-ripper services</code> sentinels), using <code>lsscsi -g</code> to read the <code>/dev/srN ↔ /dev/sgM</code> pairing — one <code>arm-ripper-srN</code> service per drive. The region is regenerated on every run (idempotent — a no-op when your drives are unchanged); re-run <code>setup-dev.sh</code> after attaching or removing a drive rather than hand-editing the pairing.</p>
+<h3 id="host-side-auto-mount-must-be-disabled">Host-side auto-mount must be disabled</h3>
+<p>Desktop hosts (any with a GNOME / KDE / XFCE session) run <code>udisks2</code> + <code>gvfs</code> to auto-mount removable media as soon as the kernel sees a new disc. That host-side mount holds <code>/dev/srN</code> exclusively — the ripper container can scan and rip (<code>makemkvcon</code> opens the SCSI generic node, not the block device), but <strong>post-rip <code>eject</code> fails with "Device or resource busy"</strong> because the container can't reach the host's mount namespace to unmount first. The ripper logs <code>eject /dev/srN failed after 4 attempts; check host auto-mount config</code> and the disc stays in the drive until the user manually ejects.</p>
+<p>Server / headless installs do not have this problem (no <code>udisks2</code> running, no <code>gvfs</code>). Desktop hosts need a one-time host config change to disable auto-mount for the ARM drive(s) <strong>only</strong> — leaving every other drive untouched. The canonical udisks2 knob for this is <code>UDISKS_AUTO=0</code> (<a href="https://manpages.debian.org/trixie/udisks2/udisks.8.en.html">udisks(8)</a>) — the drive stays visible in Files / Nautilus and the user can still mount it on demand, but the desktop's auto-mounter skips it on insert.</p>
+<p>Match the rule to the specific drive by <code>ID_PATH</code> or <code>ID_SERIAL</code> so it doesn't disable auto-mount on every optical drive on the host:</p>
+<pre><code class="language-sh"># Discover the drive's stable identifier first:
+udevadm info /dev/sr0 | grep -E 'ID_PATH=|ID_SERIAL='
+
+# /etc/udev/rules.d/99-arm-no-automount.rules
+# Replace ID_PATH with the value from the udevadm output above.
+SUBSYSTEM==&quot;block&quot;, KERNEL==&quot;sr[0-9]*&quot;, \
+    ENV{ID_PATH}==&quot;pci-0000:00:14.0-ata-3&quot;, \
+    ENV{UDISKS_AUTO}=&quot;0&quot;
+</code></pre>
+<p>Reload with <code>sudo udevadm control --reload-rules &amp;&amp; sudo udevadm trigger</code>. After this, eject from inside the ripper container succeeds normally. Phase 13's installer auto-discovers <code>ID_PATH</code> for each enrolled drive and writes the rule alongside the compose file.</p>
+<p>Why <code>UDISKS_AUTO=0</code> and not <code>UDISKS_IGNORE=1</code>: the latter hides the drive from the udisks2 device tree entirely (no entry in Files, no <code>udisksctl status</code> row), which is friendlier to set-it-and-forget-it server installs but breaks the desktop user's expectation that they can still browse the disc manually. <code>UDISKS_AUTO=0</code> is the documented per-device "skip auto-mount" toggle. Why a host-side rule instead of bind-mounting the host's DBus into the container: DBus passthrough adds a runtime dependency that fails open on headless hosts (no <code>udisks2</code> running) and ties container behaviour to the host's session bus — fragile across distros and reboots. Why not raw SCSI eject through <code>/dev/sgM</code>: <code>udisks2</code> sets PREVENT MEDIUM REMOVAL on mount, the drive firmware refuses STOP UNIT until ALLOW is sent, and even on success the host's <code>/media/&lt;label&gt;/</code> mountpoint stays stale and races the next disc insertion. Multiple containerized rip projects (<a href="https://github.com/jlesage/docker-makemkv/issues/84">jlesage/docker-makemkv #84</a>, <a href="https://github.com/jlesage/docker-makemkv/issues/138">#138</a>, <a href="https://github.com/automatic-ripping-machine/automatic-ripping-machine/issues/1558">ARM v2 #1558</a>) hit this same wall and none of them solve it in-container — the host-udev approach is the converged industry pattern.</p>
+<h2 id="why-one-ripper-service-per-drive">Why one ripper service per drive</h2>
+<p>Ripper-per-drive is explicit and declarative: users see which drives they have by reading compose, device pass-through is one line per service, and a failing ripper doesn't take down its siblings. Each ripper watches its own drive via a 2s <code>ioctl(CDROM_DRIVE_STATUS)</code> poll — no udev rules on host or in container, no distro-specific wiring. This is the trade-off we accepted vs. dynamic ripper spawning — one line of config per drive is a small price for "it's all visible in one file."</p>
+<p>If a user has drives <code>sr0</code> and <code>sr1</code> they duplicate the ripper block twice. There is no "cluster of interchangeable rippers" — each ripper owns one physical device.</p>
+<h2 id="environment-file">Environment file</h2>
+<p><code>~/arm/.env</code> holds bootstrap values. The installer generates it with sensible defaults; the user edits only the optional fields (API keys, non-default ports) — and even those are primarily set via the UI, not the env file.</p>
+<pre><code class="language-bash"># Generated by the installer — do not commit
+POSTGRES_USER=arm
+POSTGRES_PASSWORD=&lt;generated: openssl rand -hex 24&gt;
+POSTGRES_DB=arm
+ARM_SERVICE_TOKEN=&lt;generated: openssl rand -hex 32&gt;
+PUID=&lt;host user's UID, `id -u`&gt;
+PGID=&lt;host user's GID, `id -g`&gt;
+CDROM_GID=&lt;detected via `stat -c %g /dev/sr0`, else 44&gt;
+ARM_LOG_LEVEL=info
+</code></pre>
+<p><code>DATABASE_URL</code> is composed from these at compose-parse time for the Backend; see the compose snippet above.</p>
+<p>The pair of <code>~/arm/.env</code> + <code>~/arm/docker-compose.yml</code> is all a running install depends on. Re-running the installer on an existing install preserves <code>.env</code> (only re-derives <code>PUID</code>/<code>PGID</code>/<code>CDROM_GID</code> if those host facts changed), preserves the CA, and only <em>adds</em> new ripper service blocks for newly-attached drives. Upgrades come from the image tags in the compose file, not from editing <code>.env</code>.</p>
+<h2 id="file-ownership">File ownership</h2>
+<p>v3 uses the linuxserver.io-style <code>PUID</code>/<code>PGID</code> pattern to keep files on <code>/raw</code> and <code>/media</code> owned by a UID/GID the user controls — typically matching their media server (Plex/Jellyfin) so downstream consumers can read the files without any post-hoc <code>chown</code>.</p>
+<p><strong>How it works:</strong></p>
+<ul>
+<li>Each service's entrypoint starts as root, creates (or adjusts) an internal user to match <code>PUID:PGID</code> from the environment, then <code>gosu</code>/<code>s6-setuidgid</code> drops privileges before any filesystem write. Every byte ARM writes is owned by <code>PUID:PGID</code>.</li>
+<li>Ripper and transcoder share <code>PGID</code> so group-writable handoff on <code>/raw</code> works (transcoder reads + deletes intermediate files written by ripper). They also share <code>PUID</code> for simplicity; Backend and UI use the same PUID/PGID but never write to user-facing volumes — DB state lives in the Postgres-managed volume, which doesn't need to match.</li>
+<li>The writing process runs with <code>umask 002</code> and the output roots (<code>/raw</code>, <code>/media</code>) have the <code>setgid</code> bit (<code>chmod g+s</code>) set on first boot, so every subdirectory ARM creates inherits the parent group and is group-writable. This is what fixes the "directories ARM creates are owned by root" failure mode.</li>
+<li><strong>v3 never <code>chown -R</code> a user-mounted volume.</strong> If ownership is wrong at startup, the container logs a clear diagnostic and exits; it does not mutate the mount. This is the single biggest lesson from v2: recursive chown at startup clobbered user-owned Plex libraries (issue #1147), broke NFS mounts (#1186), and generated a long string of "fix permissions AGAIN" commits. v3 treats bind-mount ownership as user-owned state, not something the container manages.</li>
+</ul>
+<p><strong>Host preparation (once, at install):</strong></p>
+<ul>
+<li>Create the <code>/raw</code> and <code>/media</code> host directories owned <code>PUID:PGID</code> with mode <code>2775</code> (setgid + group-writable). The installer does this.</li>
+<li>If using NFS, export with <code>no_root_squash</code> is <strong>not</strong> needed — ARM never writes as root. Export with a squash that maps to <code>PUID</code> is fine.</li>
+<li>If using SMB/CIFS from a NAS, mount with <code>uid=$PUID,gid=$PGID,forceuid,forcegid</code>. This works identically on Linux and Windows hosts (WSL2).</li>
+<li>For Windows hosts running the UI/transcoder stack: use a WSL2-native filesystem path, a named Docker volume, or an SMB mount. NTFS bind mounts from <code>C:\...</code> are unsupported — the translation layer ignores <code>chown</code>/<code>chmod</code> and PUID becomes cosmetic.</li>
+</ul>
+<p><strong>Mismatched owners across <code>/raw</code> and <code>/media</code>:</strong> common when <code>/raw</code> is local disk and <code>/media</code> is a NAS share — the underlying storage may belong to a different account on each host. The stack has one <code>PUID:PGID</code> for everything, so reconcile at the mount layer rather than asking the container to span two identities: SMB/CIFS with <code>uid=$PUID,gid=$PGID,forceuid,forcegid</code> rewrites every write to PUID on the wire regardless of the server-side account; NFS with idmapd (or a squash that maps to PUID) does the same. After that the container only ever sees PUID:PGID on both volumes and the asymmetry disappears. If you skip reconciliation, the startup ownership precondition fails fast on whichever volume doesn't match — by design, since v3 will not <code>chown -R</code> a user-mounted volume.</p>
+<p><strong>Optical-drive device access:</strong></p>
+<p>The ripper containers also need <code>group_add: ["${CDROM_GID}"]</code> so the PUID-dropped process can read <code>/dev/sr*</code>. <code>CDROM_GID</code> is the host's optical group GID (typically <code>44</code> for Debian/Ubuntu <code>cdrom</code>, sometimes <code>19</code> for Arch <code>optical</code>). The installer detects it via <code>stat -c %g /dev/sr0</code>. <strong>No optical groups are hardcoded at image-build time</strong> — a common v2 failure mode where the image's <code>cdrom</code> group had a different GID from the host's and the container couldn't read the drive.</p>
+<h2 id="privilege-matrix">Privilege matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Container</th>
+<th>Privileged?</th>
+<th>Socket / Devices</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>arm-db</code></td>
+<td>no</td>
+<td>—</td>
+<td>Standard Postgres image.</td>
+</tr>
+<tr>
+<td><code>arm-backend</code></td>
+<td>no</td>
+<td><code>/var/run/docker.sock</code></td>
+<td>Root-equivalent on the host. Acceptable; documented.</td>
+</tr>
+<tr>
+<td><code>arm-ui</code></td>
+<td>no</td>
+<td>—</td>
+<td>Stateless.</td>
+</tr>
+<tr>
+<td><code>arm-ripper-*</code></td>
+<td>no</td>
+<td><code>/dev/sr*</code></td>
+<td>Drive exposed via compose <code>devices:</code> (no <code>--privileged</code>, no manual cgroup rules). Host's optical GID passed via <code>group_add: ["${CDROM_GID}"]</code> so the PUID-dropped process can read the device node. Nothing is hardcoded at image-build time.</td>
+</tr>
+<tr>
+<td><code>arm-transcode-*</code></td>
+<td>no</td>
+<td>optionally <code>/dev/dri</code>, NVIDIA runtime</td>
+<td>Transient.</td>
+</tr>
+</tbody>
+</table>
+<p>No <code>privileged: true</code> anywhere. If a ripper ever needs it for a weird host, we document that as an escape hatch but do not ship it on.</p>
+<h2 id="install">Install</h2>
+<p>A single command bootstraps the whole stack:</p>
+<pre><code class="language-bash">curl -fsSL https://raw.githubusercontent.com/automatic-ripping-machine/automatic-ripping-machine/main/install.sh | bash
+</code></pre>
+<p>(Or <code>bash -c "$(curl -fsSL ...)"</code> for users who want a TTY; <code>install.sh --prefix /srv/arm</code> to override the default path.)</p>
+<p><strong>What the installer does, in order:</strong></p>
+<ol>
+<li><strong>Prereq check.</strong> <code>docker</code> ≥ 24, <code>docker compose</code> v2, <code>openssl</code> ≥ 1.1.1, <code>bash</code> ≥ 4. User is in the <code>docker</code> group (or <code>sudo</code> usable), and in the host's optical group. Fails fast with a clear message if anything is missing.</li>
+<li><strong>Create the install prefix</strong> (<code>~/arm/</code> by default) with the layout shown above. Correct permissions on <code>certs/</code> (0700), <code>.env</code> (0600), and <code>raw</code>/<code>media</code> (2775 setgid). Run as the invoking user — no <code>sudo</code> needed if <code>~/arm/</code> is writable.</li>
+<li><strong>Generate the internal CA</strong> at <code>~/arm/certs/arm-ca.{key,crt}</code> (EC P-384, 10-year expiry, CN = "ARM v3 Local CA"). The key is <code>0400</code>, stays on the host, and is never mounted into any container.</li>
+<li><strong>Probe for optical drives</strong> via <code>ls /dev/sr* 2&gt;/dev/null</code>; for each, generate a leaf cert (<code>arm-ripper-srN.{key,crt}</code>) signed by the CA. Also generate leaves for <code>arm-backend</code>, <code>arm-ui</code>, and <code>arm-db</code>. All leaves have a 10-year expiry. Leaf keys are written <code>0400</code> owned by the invoking user; the <code>arm-db</code> container re-permissions its leaf at startup via an entrypoint wrapper (see the compose block above) because Postgres refuses to read an SSL key not owned by the <code>postgres</code> user.</li>
+<li><strong>Seed <code>~/arm/.env</code></strong> from a bundled template: <code>ARM_SERVICE_TOKEN</code> (<code>openssl rand -hex 32</code>), <code>POSTGRES_PASSWORD</code> (<code>openssl rand -hex 24</code>), <code>PUID=$(id -u)</code>, <code>PGID=$(id -g)</code>, <code>CDROM_GID=$(stat -c %g /dev/sr0)</code> (falls back to <code>44</code> if no drive is present). Third-party API keys are left blank for the user to fill via the UI later.</li>
+<li><strong>Generate <code>~/arm/docker-compose.yml</code></strong> from a bundled template, emitting one <code>arm-ripper-srN</code> service block per detected drive (with the corresponding cert mounts). If no drives are detected, the stack still installs — only the ripper services are omitted — and a warning is printed.</li>
+<li><strong>Print next steps.</strong> Install location, <code>cd ~/arm &amp;&amp; docker compose up -d</code>, where to find the admin password once Backend boots (<code>docker compose logs arm-backend | grep "admin password"</code>), and how to import <code>arm-ca.crt</code> into a browser/OS trust store to clear cert warnings on the LAN.</li>
+</ol>
+<p><code>install.sh --start</code> runs <code>docker compose up -d</code> at the end; the default is "show me the commands" so the user can inspect the generated files before starting anything.</p>
+<p><strong>Idempotent rerun.</strong> Re-running <code>install.sh</code> is safe and recommended when adding drives, upgrading across major versions, or recovering from local edits:</p>
+<ul>
+<li><strong>Existing <code>.env</code> is preserved.</strong> Only <code>PUID</code>/<code>PGID</code>/<code>CDROM_GID</code> are re-derived from the host and overwritten if they drifted.</li>
+<li><strong>Existing CA is preserved.</strong> The CA is the one cert LAN clients have imported into their trust stores; regenerating it would force every browser, phone, and laptop to re-import. <code>install.sh --rotate-ca</code> is a separate, explicit subcommand that regenerates the CA + all leaves (with a confirmation prompt — the nuclear option for suspected CA key compromise).</li>
+<li><strong>All leaf certs are regenerated every run</strong>, signed by the existing CA. Leaves are disposable — LAN clients trust the CA, not the specific leaf, so new leaves are invisible across the network. This self-heals hand-edited / corrupted / stale leaves and picks up SAN changes (e.g. host LAN hostname changed, new drive added) without any special flag or branching in the installer. Running containers keep their in-memory cert until restart; the <code>docker compose up -d</code> the user runs next cycles anything whose config changed.</li>
+<li><strong>Newly-detected drives</strong> get a new <code>arm-ripper-srN</code> service block appended to the compose file and a matching leaf cert.</li>
+<li><strong>Previously-removed drives</strong> leave their service blocks intact (inert when the device is absent) — the user explicitly deletes them if they want. Their leaf certs also get regenerated on rerun, which is harmless.</li>
+</ul>
+<p><strong>First-boot sequence</strong> (after <code>docker compose up -d</code>):</p>
+<ol>
+<li>Backend starts, waits for Postgres, runs <code>alembic upgrade head</code>, seeds the <code>admin</code> user with a random password written to <code>/logs/first-boot.log</code> and printed to stdout.</li>
+<li>User navigates to <code>https://host:8081</code>, accepts the internal-CA cert warning on first visit (or imports <code>~/arm/certs/arm-ca.crt</code> into the OS/browser trust store once to clear it for every device on the LAN — see <a href="../05-cross-cutting/#transport-tls">05-cross-cutting.md § Transport (TLS)</a>), logs in as <code>admin</code> with the printed password, is forced to change it.</li>
+<li>User enters third-party API keys in the UI → stored in <code>config</code>.</li>
+<li>Rippers register themselves with Backend, appear in UI.</li>
+<li>User inserts a disc; flow proceeds as documented in <a href="../02-job-lifecycle/">02-job-lifecycle.md</a>.</li>
+</ol>
+<h2 id="update-upgrade">Update / upgrade</h2>
+<ul>
+<li>v3 images are tagged <code>docker.io/automaticrippingmachine/arm-&lt;service&gt;:v3.&lt;x&gt;.&lt;y&gt;</code>. Keeping the registry and namespace path from v2 so existing users don't have to follow a new identity.</li>
+<li>Upgrade a minor version = <code>cd ~/arm &amp;&amp; docker compose pull &amp;&amp; docker compose up -d</code>. Backend runs migrations; DB schema moves forward.</li>
+<li>Upgrade a major version = rerun <code>install.sh</code> to pick up any new service blocks or cert SANs the release requires, then <code>docker compose pull &amp;&amp; docker compose up -d</code>.</li>
+<li><strong>No rollback of DB schema.</strong> Alembic <code>downgrade</code> is not supported past minor versions — back up the DB if paranoid.</li>
+</ul>
+<h2 id="uninstall">Uninstall</h2>
+<pre><code class="language-bash">cd ~/arm &amp;&amp; docker compose down
+rm -rf ~/arm
+</code></pre>
+<p>That's it. No systemd units, no distro integration, no state anywhere else on the host.</p>
+<h2 id="backup">Backup</h2>
+<p>Four things to back up, in priority order:</p>
+<ol>
+<li><strong><code>~/arm/certs/arm-ca.key</code>.</strong> Unique-per-install and unrecoverable. If lost, the user has to rotate the CA and re-import on every LAN client — recoverable but annoying.</li>
+<li><strong>Postgres dump.</strong> <code>pg_dump</code> from a cron against the <code>armv3-db</code> container; ARM doesn't manage this. Contains plaintext secrets — store the dump somewhere you'd trust with a password export.</li>
+<li><strong><code>~/arm/.env</code>.</strong> Useful for reproducing a deployment quickly; losing it just means regenerating <code>ARM_SERVICE_TOKEN</code> and the DB password (which then requires restoring the Postgres dump with matching credentials, or renaming the DB user).</li>
+<li><strong><code>~/arm/raw</code> and <code>~/arm/media</code>.</strong> User's responsibility; these are large and the user knows their own backup strategy.</li>
+</ol>
+<p><code>~/arm/docker-compose.yml</code> is regeneratable by rerunning <code>install.sh</code> against the same <code>.env</code> and <code>certs/</code>, so it doesn't strictly need a backup.</p>
+<h2 id="platform-specific-notes">Platform-specific notes</h2>
+<ul>
+<li><strong>Bare-metal Docker on Linux</strong>: the one supported path. Install via <code>install.sh</code> and run <code>docker compose up -d</code>; all docs default to this. NAS-appliance GUIs (Unraid/Synology) are out of scope for v3.0 — see "Explicitly NOT supported" above.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../05-cross-cutting/" class="btn btn-neutral float-left" title="05. Cross Cutting"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../07-open-questions/" class="btn btn-neutral float-right" title="07 Open Questions">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../05-cross-cutting/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../07-open-questions/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

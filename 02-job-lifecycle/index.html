@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>02. Job Lifecycle - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "02. Job Lifecycle";
+        var mkdocs_page_input_path = "02-job-lifecycle.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../00-vision/">00. Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../01-architecture/">01. Architecture</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">02. Job Lifecycle</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#entities">Entities</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#job-state-machine">Job state machine</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#track-state-machine">Track state machine</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#crash-recovery-restart-the-rip-from-scratch">Crash recovery: restart the rip from scratch</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#what-this-buys-us">What this buys us</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#what-this-does-not-do">What this does NOT do</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#session-application-transcode-task-lifecycle">Session Application &amp; Transcode Task lifecycle</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#session-application-state-machine">Session Application state machine</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#transcode-task-state-machine">Transcode task state machine</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#why-rip-level-restart-but-task-level-checkpointing-for-transcode">Why rip-level restart but task-level checkpointing for transcode</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#session-model-details">Session model details</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#why-the-three-table-split">Why the three-table split</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#output-paths-and-naming">Output paths and naming</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#raw-intermediate-storage">/raw — intermediate storage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#media-user-facing-library">/media — user-facing library</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#filename-templates-honest-mechanical-names">Filename templates: honest mechanical names</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#output_path_template-tokens">output_path_template tokens</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#concurrent-write-safety">Concurrent write safety</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#unidentified-and-placeholder-rips">Unidentified and placeholder rips</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ui-touchpoints-during-a-jobs-life">UI touchpoints during a job's life</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05-cross-cutting/">05. Cross Cutting</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06-deployment/">06. Deployment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09-testing/">09. Testing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10-iso-source-ripping/">10. ISO Source Ripping</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">02. Job Lifecycle</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/02-job-lifecycle.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="02-job-lifecycle-crash-recovery">02 — Job Lifecycle &amp; Crash Recovery</h1>
+<p>Crash-safe batch ripping is a top-three reason v3 exists. This document spells out exactly what state a job can be in, what triggers a transition, and how the system recovers after an unclean shutdown.</p>
+<h2 id="entities">Entities</h2>
+<p>Four long-lived entities drive the lifecycle, plus one reusable template:</p>
+<ul>
+<li><strong>Job</strong> — one disc insertion. Created when a ripper identifies an inserted disc. Owns the overall rip outcome.</li>
+<li><strong>Track</strong> — one logical piece of a disc (one title on a DVD/BD, one song on a CD, one dump on a data disc). Created per track once identification succeeds. This is the <strong>unit of checkpointing</strong>.</li>
+<li><strong>Session Application</strong> — the durable record of "apply session S to job J." Created when a user (or <code>drives.default_session_id</code> auto-apply) queues a session against a rip. Carries its own state machine and owns the fan-out into <strong>Transcode Tasks</strong>.</li>
+<li><strong>Transcode Task</strong> — the unit of work a single <code>arm-transcode</code> container executes. One session application fans out to N tasks, one per track being transcoded.</li>
+</ul>
+<p><strong>Session</strong> is not itself a lifecycle entity. It is a named, reusable bundle of (rip preset, transcode preset, output path template) scoped to a media type. Users pick a session to apply to a rip; applying creates a Session Application. Full definition in <a href="#session-model-details">§ Session model details</a>.</p>
+<h2 id="job-state-machine">Job state machine</h2>
+<pre><code>     (disc inserted)
+           │
+           ▼
+       ┌─────────┐   identify fails       ┌──────────────────┐
+       │ created │ ─────────────────────▶ │ awaiting_user_id │
+       └────┬────┘                        └────────┬─────────┘
+            │ identify OK                          │ user resolves in UI
+            ▼                                      ▼
+       ┌────────────┐  ◀─────────────────────────  │
+       │ identified │                              │
+       └─────┬──────┘                              │
+             │ first track begins                  │
+             ▼                                     │
+       ┌────────────┐   one or more tracks fail, others succeed
+       │  ripping   │ ─────────────────────┐
+       └─────┬──────┘                      │
+             │ all tracks done             │
+             ▼                             ▼
+       ┌────────────┐                ┌─────────────────┐
+       │  ripped    │                │ ripped_partial  │
+       └─────┬──────┘                └────────┬────────┘
+             │                                │
+             └──────────────┬─────────────────┘
+                            ▼
+                    (disc ejected, ripper idle)
+                    (downstream session applications may queue)
+</code></pre>
+<p>Terminal states for a <code>Job</code>: <code>ripped</code>, <code>ripped_partial</code>, <code>abandoned</code> (user gave up in UI), <code>failed</code> (identification failed catastrophically).</p>
+<h2 id="track-state-machine">Track state machine</h2>
+<p>Every track is a row with a status column. Within a single rip, tracks move through this machine sequentially as the ripper works:</p>
+<pre><code>    ┌────────┐                           ┌─────────────┐
+    │ queued │ ────────────────────────▶ │ in_progress │
+    └────────┘                           └──────┬──────┘
+                                                │
+                                ┌───────────────┴───────────────┐
+                                ▼                               ▼
+                            ┌──────┐                        ┌──────┐
+                            │ done │                        │failed│
+                            └──────┘                        └──────┘
+</code></pre>
+<p>There is no <code>stale</code> state and no per-track claim. With one ripper container per drive (see <a href="../01-architecture/">01-architecture.md</a>), the ripper that creates the tracks is the only writer for the lifetime of the disc — no other process can race for them.</p>
+<p>A <code>Track</code> carries these fields relevant to recovery:
+- <code>status</code> — one of the states above.
+- <code>attempts</code> — how many times this track has been tried (incremented on a job-level reset; see below).</p>
+<h2 id="crash-recovery-restart-the-rip-from-scratch">Crash recovery: restart the rip from scratch</h2>
+<p>A rip is interrupted only by something that takes the whole ripper process down — overwhelmingly that means a power outage or a host reboot. Backend-only restarts don't interrupt rips (the ripper keeps working and replays its state-transition REST calls when Backend comes back); ripper-only crashes are rare in practice (single-purpose container, Docker restart policy brings it back in seconds).</p>
+<p>When an interruption does happen, <strong>the entire rip restarts from scratch</strong>: every track for that job is reset to <code>queued</code>, the <code>/raw/&lt;job_id&gt;/</code> folder is wiped, the ripper re-runs MakeMKV against the disc, and previously-"done" tracks are re-ripped. There is no per-track resume.</p>
+<p>Why no resume of done tracks? Three reasons:</p>
+<ol>
+<li><strong>MakeMKV can't resume a partial title</strong> — that boundary already forced re-ripping the in-progress one.</li>
+<li><strong>Filesystem durability is not guaranteed track-by-track.</strong> A "done" file recorded in the DB may not have hit disk before the power cut (no per-track <code>fsync</code>). Trusting it would risk silent corruption in the library.</li>
+<li><strong>The cost is small in practice.</strong> Interruptions are rare. Re-ripping a few done tracks on a once-in-a-blue-moon power cut is cheaper than carrying the durability machinery to make partial state trustworthy.</li>
+</ol>
+<p>Two recovery paths trigger the reset:</p>
+<ul>
+<li><strong>Backend-startup sweep (one-shot, no timeout).</strong> On boot, before serving traffic, Backend finds every job with <code>status='ripping'</code> — by definition all such jobs were interrupted, since Backend was just down — sets <code>resumed_from_crash=true</code>, resets every track for those jobs to <code>queued</code>, increments each track's <code>attempts</code>, and instructs the relevant rippers to wipe <code>/raw/&lt;job_id&gt;/</code> before re-rip.</li>
+<li><strong>Ripper-startup probe.</strong> When a ripper container starts, it polls its drive (<code>ioctl(CDROM_DRIVE_STATUS)</code>); if a disc is present and Backend reports an in-flight job for the drive in <code>status='ripping'</code>, the ripper calls <code>POST /api/ripper/jobs/{job_id}/resume</code>. Backend performs the same reset (mark resumed, requeue all tracks, increment attempts) and the ripper wipes <code>/raw/&lt;job_id&gt;/</code> and starts over.</li>
+</ul>
+<p>Both paths converge on the same DB transition; the difference is who initiates it (Backend on its own boot, or the ripper on its boot when Backend was up the whole time).</p>
+<p>The UI marks a job "resumed from crash" until its next terminal state.</p>
+<h3 id="what-this-buys-us">What this buys us</h3>
+<ul>
+<li><strong>Power cut mid-batch.</strong> Every interrupted job is found by the Backend-startup sweep and restarted from scratch. No per-track timeouts to wait out, no orphan claims to clean up.</li>
+<li><strong>Ripper container crashes alone.</strong> Docker restart brings it back; the ripper-startup probe handles the reset. Backend was never down so its in-memory WS subscribers reconnect naturally.</li>
+<li><strong>Backend crashes, rippers keep ripping.</strong> Nothing to recover. Rippers buffer state-transition REST calls (<code>complete</code>, <code>fail</code>, <code>job-complete</code>) with exponential backoff (1s, 2s, 4s, 8s, 30s cap) until Backend is back. WS progress messages dropped during the outage are simply not delivered; the next message replaces them. The DB row is still source of truth.</li>
+</ul>
+<h3 id="what-this-does-not-do">What this does NOT do</h3>
+<ul>
+<li><strong>Resume mid-track or mid-job.</strong> Interruption means full restart of the rip — every track, including ones the DB says were <code>done</code>. Accepted by design (see reasons above).</li>
+<li><strong>Detect a hung-but-not-crashed ripper.</strong> If MakeMKV wedges without the container exiting, no automatic detection. The user sees flat progress in the UI and restarts the ripper container manually, which triggers the ripper-startup probe.</li>
+</ul>
+<h2 id="session-application-transcode-task-lifecycle">Session Application &amp; Transcode Task lifecycle</h2>
+<p>Session Applications are the runtime record of "apply this session to this job"; Transcode Tasks are the execution units that fan out from an application. They have separate lifecycles. (The Session itself is a template and has no runtime state — see <a href="#session-model-details">§ Session model details</a>.)</p>
+<h3 id="session-application-state-machine">Session Application state machine</h3>
+<pre><code>  ┌─────────┐    user queues or auto-queued    ┌────────────────────┐
+  │ drafted │ ───────────────────────────────▶ │ waiting_identify   │  (only if job is
+  └─────────┘                                  └─────────┬──────────┘   awaiting_user_id
+                                                         │              under a deferred_
+                                                         │ identity     placeholder rip
+                                                         │ resolves     preset)
+                                                         ▼
+  ┌─────────┐    user queues or auto-queued    ┌──────────┐
+  │ drafted │ ───────────────────────────────▶ │  queued  │  (normal path: job already
+  └─────────┘                                  └────┬─────┘   identified at apply time)
+                                                    │ first task starts
+                                                    ▼
+                                              ┌───────────┐
+                                              │ running   │
+                                              └────┬──────┘
+                                                   │
+                               ┌───────────────────┼───────────────────┐
+                               ▼                   ▼                   ▼
+                          ┌─────────┐        ┌─────────────┐      ┌─────────┐
+                          │  done   │        │done_partial │      │ failed  │
+                          └─────────┘        └─────────────┘      └─────────┘
+</code></pre>
+<p><code>waiting_identify</code> is the durable "this session application is parked until you tell us what the disc is" state. See <a href="#unidentified-and-placeholder-rips">§ Unidentified and placeholder rips</a> for when it's used and the transitions around it.</p>
+<h3 id="transcode-task-state-machine">Transcode task state machine</h3>
+<p><code>queued → in_progress → (done | failed | stale)</code>, with per-task claims and heartbeats — see <code>transcode_tasks.claimed_by</code> / <code>claim_heartbeat_at</code> in <a href="../04-data-model/#transcode_tasks">04-data-model.md</a>. Unlike the rip side, multiple ephemeral transcoder containers really do compete for queued tasks, so the claim mechanism is load-bearing here. The stale-claim sweep applies; HandBrake can't resume mid-transcode either, so <code>stale → queued</code> means "re-transcode that file from scratch" — but already-<code>done</code> sibling tasks in the same session application keep their output.</p>
+<h2 id="why-rip-level-restart-but-task-level-checkpointing-for-transcode">Why rip-level restart but task-level checkpointing for transcode</h2>
+<p>Two different cost models drove two different choices.</p>
+<p><strong>Rip side: whole-job restart on interruption.</strong> Crash recovery for a rip means re-running MakeMKV against the disc and overwriting <code>/raw/&lt;job_id&gt;/</code>. We accept re-ripping done tracks because (a) MakeMKV has no mid-title resume, so the in-progress track is already a re-rip; (b) "done" in the DB doesn't guarantee the file is durable on disk without a per-track <code>fsync</code> we don't issue; and (c) interruptions are rare — a power outage every few months that costs an extra 30 minutes of re-ripping is cheaper than the machinery to make per-track resume safe.</p>
+<p><strong>Transcode side: per-task checkpointing.</strong> A session application can fan out into many transcode tasks (one per ripped track), and a 4-hour batch transcode losing all progress on a Backend restart is a different cost than a 45-minute rip losing progress on a power cut. Transcode tasks have stable inputs (the raw files in <code>/raw/</code>, which don't change), no spinning physical media to babysit, and run in ephemeral containers that come and go anyway — so they're a natural fit for claim-and-heartbeat with per-task retry. Done tasks are kept; only the interrupted ones re-run.</p>
+<h2 id="session-model-details">Session model details</h2>
+<p>A <strong>Session</strong> is a named composition of (rip preset, transcode preset, output path convention) that can be applied to any rip of the matching media type. Sessions are what users pick in the UI; the two preset tables under them hold the reusable rip-strategy and encoding building blocks.</p>
+<ul>
+<li><strong>Three tables, one user-facing concept.</strong> <code>rip_presets</code> govern ripper behavior (track selection, identification mode, output mode — tracks vs ISO vs data copy). <code>transcode_presets</code> govern encoding (HandBrake preset reference, abcde profile, container, hardware preference). <code>sessions</code> compose one of each plus an <code>output_path_template</code>. Full field lists in <a href="../04-data-model/#rip_presets">04-data-model.md</a>. When <code>rip_preset.track_selection = custom</code>, <code>rip_preset.track_filters_json</code> carries the declarative filter (<code>min_duration_seconds</code>, <code>max_duration_seconds</code>, <code>title_indices</code> allowlist, <code>title_indices_exclude</code> blocklist — all conditions ANDed). The schema is owned by <a href="../../packages/arm_common/arm_common/schemas/sessions.py"><code>arm_common.schemas.TrackFilters</code></a>; the rip pipeline applies it via <a href="../../services/backend/arm_backend/track_selection.py"><code>select_tracks</code></a>.</li>
+<li><strong>Built-ins ship locked.</strong> ARM seeds a set of built-in rip presets, transcode presets, and sessions on first boot, all with <code>is_builtin = true</code>. Built-ins are not editable through the API. The UI "New Session" wizard can pre-fill its form from any built-in, but saves a new row with <code>is_builtin = false</code>; no parent link is stored.</li>
+<li><strong>Sessions are scoped to a single media type</strong> (<code>movie</code> | <code>tv</code> | <code>music</code> | <code>data</code> | <code>iso</code>). Any session can be applied to any rip <em>of the matching media type</em>. The UI filters the session picker by the rip's identified media type so the user can only pick a compatible session. <code>session.media_type</code> must equal the referenced rip preset's <code>media_type</code>, and (if a transcode preset is attached) the transcode preset's <code>media_type</code>.</li>
+<li><strong>Transcode preset is nullable.</strong> ISO and data-copy sessions skip transcode entirely; their <code>transcode_preset_id</code> is null and no transcode task fans out.</li>
+<li><strong>Sessions are re-runnable.</strong> A user can queue a session against a rip made six months ago. Re-running against a retired raw (if the user pruned it) is a clear error in the UI.</li>
+</ul>
+<p>Concrete session fields (summary — full in <a href="../04-data-model/#sessions">04-data-model.md</a>):</p>
+<ul>
+<li><code>name</code> — unique per user (UI picker requirement; not used in filenames — <code>{transcode_slug}</code> handles that).</li>
+<li><code>media_type</code> (enum: <code>movie</code> | <code>tv</code> | <code>music</code> | <code>data</code> | <code>iso</code>)</li>
+<li><code>is_builtin</code> (bool)</li>
+<li><code>rip_preset_id</code> (FK → <code>rip_presets</code>)</li>
+<li><code>transcode_preset_id</code> (FK → <code>transcode_presets</code>, nullable)</li>
+<li><code>output_path_template</code> — relative to the media-type library root; see "Output paths and naming" below.</li>
+<li><code>overrides_json</code> — per-session tweaks layered on top of the referenced presets.</li>
+<li><code>created_by_user_id</code>, <code>created_at</code>, <code>updated_at</code></li>
+</ul>
+<h3 id="why-the-three-table-split">Why the three-table split</h3>
+<p>v2 bundled rip strategy + transcode settings + output convention into a single "session" concept. That works for simple cases but doesn't cleanly express things the community has been asking for: home-movie rips (no identification), ISO dumps (no transcode), multiple output formats from the same source (MP3 + FLAC from the same CD), per-disc-type encoding differences (DVD vs Blu-ray vs 4K UHD). Decomposing rip behavior and transcode behavior into independently-reusable presets, then recomposing them at the session layer, keeps the user-facing story ("pick a session") while making the parts separately extensible. See GitHub discussion <a href="https://github.com/automatic-ripping-machine/automatic-ripping-machine/discussions/815">#815</a> for the design origin.</p>
+<h2 id="output-paths-and-naming">Output paths and naming</h2>
+<h3 id="raw-intermediate-storage"><code>/raw</code> — intermediate storage</h3>
+<p>Rippers write to <code>/raw/{job_id}/</code>, one directory per disc insertion. Filenames inside follow MakeMKV's native output convention (<code>title_tNN.mkv</code>) plus any sidecars MakeMKV emits. This directory is internal to the pipeline and is never exposed to media scanners; users don't browse <code>/raw</code>.</p>
+<p>Cleanup: when every transcode task derived from a job reaches a terminal state and retention policy allows, the whole <code>/raw/{job_id}/</code> directory is removed. Retention is user-configurable; the default is <code>keep_forever</code> — the data-hoarder profile from <a href="../00-vision/">00-vision.md</a> is the dominant user, so the safe default is to keep raw bits until the operator explicitly opts out (set <code>default_retention_policy=prune_after_session</code> in the Config singleton, or per-job).</p>
+<h3 id="media-user-facing-library"><code>/media</code> — user-facing library</h3>
+<p>The top-level library shape mirrors the Plex/Jellyfin convention — both scanners agree at this granularity, so "Plex-friendly" and "Jellyfin-friendly" are the same thing:</p>
+<pre><code>/media/
+  Movies/
+    {Title} ({Year})/
+      {Title} ({Year}) - {transcode_slug}.mkv
+  TV Shows/
+    {Show} ({Year})/
+      Season {NN}/
+        {Show} - S{NN}D{DD}T{NN} ({HH}h{MM}m) - {transcode_slug}.mkv
+  Music/
+    {Artist}/
+      {Album}/
+        {NN} - {Track} - {transcode_slug}.flac
+</code></pre>
+<p>The three top-level folder names (<code>Movies</code>, <code>TV Shows</code>, <code>Music</code>) are configurable per install (env vars, default to the above). The subtree shape is fixed by media type — changing it would break scanner matching, which is the whole point of picking a convention.</p>
+<p><strong>Why <code>{transcode_slug}</code> is in the default filename.</strong> The same raw rip is commonly transcoded in multiple encodings (1080p H.265, 4K HDR, phone-friendly). Including the transcode preset name as a suffix in the same folder is the native Plex/Jellyfin idiom for "versions of the same title" — both scanners group sibling files matching <code>{Title} ({Year}) - *.ext</code> as alternate versions, and the version selector on the movie page then shows <code>1080p-h265</code> vs <code>4k-hdr</code> as meaningful labels the user actually picked. Without this suffix, two transcodes of the same source would collide on one filename. <code>{transcode_slug}</code> is unavailable for ISO and data-copy sessions (no transcode preset); their default templates don't include it. See "Concurrent write safety" below for the handling when two sessions legitimately resolve to the same slug (e.g. same transcode preset, different rip preset).</p>
+<h3 id="filename-templates-honest-mechanical-names">Filename templates: honest mechanical names</h3>
+<p><strong>Templates apply at transcode time, not rip time.</strong> The rip step itself produces only <code>/raw/{job_id}/title_tNN.mkv</code> (MakeMKV's native naming) — see "/raw" above. Identity-derived filenames are an artifact of the transcoder writing into <code>/media/</code>, expanded against whatever identity has been applied to the job by then. Everything in this section describes the <em>transcode-output</em> names a user eventually sees in their library; nothing here runs during the rip.</p>
+<p>The core design principle: <strong>don't pretend to know what we don't know.</strong> MakeMKV surfaces only a track layout (per-title durations, stream info) and the disc's volume label — no episode titles, no season or disc numbers, no "this is the main feature" signal; per-track names come back as generic <code>title_nn</code>. Title and year are resolved by the TMDB/OMDB lookup at identify time; <strong>season and disc number for TV box sets are both user-supplied</strong> (volume labels occasionally encode one or both as a hint — <code>WEST_WING_S03_D02</code> — but most don't, and TV box sets are the routine case where identify lands in <code>awaiting_user_id</code> waiting for the user to enter them). Defaults therefore generate mechanical names the user can rename in <code>/media</code> after transcode completes, for scanner-perfect matching.</p>
+<p><strong>Movies</strong> — relative path, prefixed by <code>Movies/</code> at write time:</p>
+<ul>
+<li>Longest feature-length track → <code>{Title} ({Year})/{Title} ({Year}) - {transcode_slug}.{ext}</code></li>
+<li>Other feature-length tracks (≥ 80 min) → <code>{Title} ({Year})/{Title} ({Year}) - Track {NN} ({HH}h{MM}m) - {transcode_slug}.{ext}</code></li>
+<li>User renames to <code>{Title} ({Year}) {edition-Director's Cut} - {transcode_slug}.{ext}</code> etc. when they know which alternate cut is which.</li>
+</ul>
+<p>Multi-feature discs (extended editions, alternate endings) produce multiple feature-length tracks with <em>different</em> file sizes — the ripper surfaces these in the UI at rip-selection time so the user can pick which to rip. Alternate-angle tracks behave the same way at our layer: an "angle" is a DVD/Blu-ray feature where a single playlist encodes multiple time-synchronized video streams the player hot-swaps between via the remote's angle button (concert footage from different cameras is the canonical legitimate use; adult content is where it shows up most often in the wild). The disc-spec mechanism is in-title branching, but MakeMKV flattens that and enumerates each angle as its own title — so they appear in the selection UI as several long tracks of near-identical duration, indistinguishable from any other multi-feature case, and the user picks. No special handling. Whether these surfacing rules fire automatically is governed by the <code>rip_preset.track_filters_json</code> — the <code>main_feature</code> rip preset enables "flag multi-feature," <code>archive</code> disables it, <code>custom</code> lets the user wire their own rules.</p>
+<p><strong>TV</strong> — relative path, prefixed by <code>TV Shows/</code> at write time:</p>
+<ul>
+<li>All tracks → <code>{Show} ({Year})/Season {NN}/{Show} - S{NN}D{DD}T{NN} ({HH}h{MM}m) - {transcode_slug}.{ext}</code></li>
+</ul>
+<p>Season + disc + track + duration + session in a predictable, greppable pattern. <strong>No auto-<code>SNNEMM</code>:</strong> disc order is not always episode order, and silently guessing wrong is worse than shipping honest names. Users rename to <code>{Show} - S{NN}E{MM} - Episode Title - {transcode_slug}.{ext}</code> post-rip once they know which track is which.</p>
+<p>"Play All" tracks (a single long track that concatenates every episode on the disc) appear with the same mechanical name, and land in the Season folder. They are <em>not</em> auto-detected and filtered — "duration ≈ sum of other tracks" doesn't work because special features on the same disc confound the heuristic. Instead, the ripper UI surfaces all tracks with their durations at rip-selection time, and the user deselects Play All (or any tracks they don't want) before the rip starts. The naming layer stays mechanical.</p>
+<p><strong>Music (CD)</strong> — relative path, prefixed by <code>Music/</code> at write time:</p>
+<ul>
+<li><code>{Artist}/{Album}/{NN} - {Track} - {transcode_slug}.{ext}</code></li>
+</ul>
+<p>This is the one case where ARM has reliable track-level metadata (MusicBrainz, CD-Text), so we use it. Track titles are populated automatically. The transcode slug disambiguates parallel FLAC-and-MP3 sessions against the same CD (abcde profile name, slugified — same mechanism as the HandBrake case).</p>
+<h3 id="output_path_template-tokens"><code>output_path_template</code> tokens</h3>
+<p>Sessions own the relative path from the media-type root down to the leaf filename. Tokens available at expansion time depend on the session's <code>media_type</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th style="text-align: center;">movie</th>
+<th style="text-align: center;">tv</th>
+<th style="text-align: center;">music</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{title}</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td>identification</td>
+</tr>
+<tr>
+<td><code>{year}</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td>identification</td>
+</tr>
+<tr>
+<td><code>{show}</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td>identification</td>
+</tr>
+<tr>
+<td><code>{season}</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td>identification / user input (zero-padded) — usually user input for box sets, since volume labels rarely encode it</td>
+</tr>
+<tr>
+<td><code>{disc}</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td>identification / user input (zero-padded) — same caveat as <code>{season}</code></td>
+</tr>
+<tr>
+<td><code>{track}</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>MakeMKV / CD track number (zero-padded)</td>
+</tr>
+<tr>
+<td><code>{duration_human}</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">—</td>
+<td>MakeMKV (<code>{HH}h{MM}m</code>)</td>
+</tr>
+<tr>
+<td><code>{artist}</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>MusicBrainz / CD-Text</td>
+</tr>
+<tr>
+<td><code>{album}</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>MusicBrainz / CD-Text</td>
+</tr>
+<tr>
+<td><code>{track_title}</code></td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">—</td>
+<td style="text-align: center;">✓</td>
+<td>MusicBrainz / CD-Text</td>
+</tr>
+<tr>
+<td><code>{transcode_slug}</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>transcode preset <code>name</code> field, slugified (lowercase, spaces → hyphens, non-alphanumerics stripped). Unavailable when <code>session.transcode_preset_id IS NULL</code> (ISO, data-copy).</td>
+</tr>
+<tr>
+<td><code>{ext}</code></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td>transcode preset <code>container</code> (<code>mkv</code>, <code>mp4</code>, <code>flac</code>, …)</td>
+</tr>
+</tbody>
+</table>
+<p>Templates are validated on session save: the backend expands the template against a synthetic job of the declared <code>media_type</code> and rejects the save if any token resolves to empty for a required slot. This is how we keep users from shipping a template that silently produces <code>/media/Movies/ ().mkv</code> on a real rip. Templates that reference <code>{transcode_slug}</code> are also rejected at save time when the session has no transcode preset attached.</p>
+<h3 id="concurrent-write-safety">Concurrent write safety</h3>
+<p>Two layers of defense against overlapping writes to the same output path:</p>
+<p><strong>Atomic rename on completion.</strong> The transcoder writes to <code>&lt;final&gt;.arm-inprogress</code> in the final directory, <code>fsync</code>s, then <code>rename(2)</code> to the final path on success. Same filesystem, so the rename is atomic. Plex and Jellyfin don't match <code>.arm-inprogress</code> as a media extension, so half-written files are invisible to scanners — no "corrupt file" flags during transcode, no racy mid-transcode scanning. On crash, leftover <code>.arm-inprogress</code> files are swept by the transcoder at startup: any file matching <code>*.arm-inprogress</code> under <code>/media</code> with no corresponding <code>transcode_tasks</code> row in <code>in_progress</code> state is deleted. The <code>.arm-inprogress</code> suffix is unique to ARM so it never collides with <code>wget</code>/<code>aria2</code>-style <code>.part</code> files or editor <code>.tmp</code> files.</p>
+<p><strong>Apply-time collision validation.</strong> When a user applies a session to a job, the Backend resolves every task's output path <em>before</em> fan-out. Two failure cases:</p>
+<ol>
+<li><strong>Cross-session collision</strong> — two sessions' templates resolve to the same path. This is legal schema-wise: two sessions may share a <code>transcode_preset_id</code> while differing in <code>rip_preset_id</code> (e.g. one rips main feature only, the other rips the whole disc — the main-feature output path is produced by both). Caught at apply-time, not save-time: when the second session is applied to a job that already has the first session's outputs queued or on disk, the Backend surfaces the same overwrite prompt as the cross-job case below.</li>
+<li><strong>Cross-job collision</strong> — the same session applied to two different jobs that identify as the same title (user re-ripping a movie they already have). Caught at apply-time by a lookup against <code>transcode_tasks.output_path</code> for any row in <code>queued | in_progress | done</code> state, plus a filesystem check for files ARM didn't put there (pre-v3 content, manual user copies). On hit, the UI shows a dialog:</li>
+</ol>
+<blockquote>
+<p>"This session would write <code>Iron Man (2008) - plex-1080p-h265.mkv</code>, which already exists. Options: (a) Overwrite the existing file; (b) Cancel."</p>
+</blockquote>
+<p>Option (a) sets <code>session_applications.overwrite = true</code>; the transcoder replaces the file atomically via the same <code>.arm-inprogress</code> → rename flow. Option (b) aborts the apply. No silent auto-suffix (<code>(2).mkv</code>) — that hides user intent and produces files neither scanner recognizes as meaningful versions.</p>
+<p><strong>DB-level safety net.</strong> A partial unique index on <code>transcode_tasks(output_path)</code> where <code>status IN ('queued', 'in_progress', 'done')</code> catches any path collision the apply-time check missed (concurrent applies, logic bugs). Failed tasks can share paths — their file is presumed absent.</p>
+<p><strong>Idempotency.</strong> Applying the same (session, job) pair twice returns the existing <code>session_application</code> rather than fanning out a second set of tasks.</p>
+<h3 id="unidentified-and-placeholder-rips">Unidentified and placeholder rips</h3>
+<p>When a user opts into placeholder-rip mode (<code>rip_presets.identification_mode = deferred_placeholder</code>, or the global <code>config.block_on_miss = false</code>), ripping proceeds immediately on an identification miss. The rip writes to <code>/raw/&lt;job_id&gt;/</code> exactly as a normal rip would — raw paths key on <code>job_id</code>, which is assigned pre-identify and is identity-independent (see <a href="../04-data-model/">04-data-model.md § jobs</a>). <strong>Nothing is ever renamed or moved as a consequence of identity resolution.</strong></p>
+<p>Transcode is gated on identity, not on rip completion. Specifically:</p>
+<ul>
+<li>An auto-session queued via <code>drives.default_session_id</code> stays in <code>session_applications.status = waiting_identify</code> while the job is <code>awaiting_user_id</code>. No <code>transcode_tasks</code> rows exist yet — fan-out is deferred until identity resolves.</li>
+<li>A manual session apply against an unidentified job returns the same <code>waiting_identify</code> state rather than failing; the UI surfaces this as "queued — waiting for you to identify this disc."</li>
+<li>On identity resolution (<code>POST /api/jobs/{job_id}/resolve</code>), Backend transitions every <code>waiting_identify</code> session_application to <code>queued</code> and fans out <code>transcode_tasks</code> using the now-resolved title. Path templates expand against the resolved identity; output paths are correct from the first byte the transcoder writes.</li>
+<li>If the user changes identity <em>again</em> after transcoding has already started (rare — requires them to re-open the resolve dialog post-identification), already-completed transcode outputs stay where they are. This is identical to the "user renamed the movie after transcoding" case, which v3 treats as out-of-scope manual cleanup. Queued and in-progress tasks are not re-pathed mid-flight.</li>
+</ul>
+<p>The raw-side cleanup rule from <a href="#raw--intermediate-storage">§ <code>/raw</code> — intermediate storage</a> applies unchanged: <code>/raw/&lt;job_id&gt;/</code> is removed per retention policy once all its derived transcodes are terminal.</p>
+<h2 id="ui-touchpoints-during-a-jobs-life">UI touchpoints during a job's life</h2>
+<ul>
+<li><strong>Create phase:</strong> UI shows "waiting for disc" on idle rippers.</li>
+<li><strong>Identify miss:</strong> UI shows a manual-identify modal; ripper blocks until user resolves.</li>
+<li><strong>Rip in progress:</strong> UI shows per-track progress bars via WS.</li>
+<li><strong>Ripped:</strong> UI shows the job with available actions — queue session(s), edit metadata, delete raw.</li>
+<li><strong>Session queued:</strong> UI shows transcode progress per task.</li>
+<li><strong>Resume after crash:</strong> UI shows a "resumed from crash" banner on affected jobs/sessions.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../01-architecture/" class="btn btn-neutral float-left" title="01. Architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../03-protocol/" class="btn btn-neutral float-right" title="03. Protocol">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../01-architecture/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../03-protocol/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

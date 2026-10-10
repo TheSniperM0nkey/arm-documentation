@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>05. Cross Cutting - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "05. Cross Cutting";
+        var mkdocs_page_input_path = "05-cross-cutting.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../00-vision/">00. Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../01-architecture/">01. Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02-job-lifecycle/">02. Job Lifecycle</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">05. Cross Cutting</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#repo-layout">Repo layout</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configuration-strategy">Configuration strategy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#authentication-model">Authentication model</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#user-facing-ui-backend">User-facing (UI → Backend)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#service-to-service">Service-to-service</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#authorization-rules">Authorization rules</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#transport-tls">Transport (TLS)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cert-layout">Cert layout</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#ca-lifecycle-and-key-security">CA lifecycle and key security</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#container-side-trust-store-merged-bundle-at-startup">Container-side trust store: merged bundle at startup</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#envurl-consequences">Env/URL consequences</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#what-we-deliberately-do-not-do">What we deliberately do NOT do</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#websocket-security">WebSocket security</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#secrets-handling">Secrets handling</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#logging">Logging</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#format">Format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#persistence">Persistence</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#debug-level">DEBUG level</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#what-we-dont-do">What we don't do</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#observability-beyond-logs">Observability beyond logs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#code-quality">Code quality</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#notifications">Notifications</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06-deployment/">06. Deployment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09-testing/">09. Testing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10-iso-source-ripping/">10. ISO Source Ripping</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">05. Cross Cutting</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/05-cross-cutting.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="05-cross-cutting-concerns">05 — Cross-Cutting Concerns</h1>
+<p>Things that touch every service: configuration, authentication, secrets, logging, observability, code quality, testing, and the shared Python package.</p>
+<h2 id="repo-layout">Repo layout</h2>
+<p>ARM v3 is a <strong>monorepo with a shared Python package</strong> at the repository root. (During development it lived in isolation under a top-level <code>v3/</code> subtree so that no v2 file was touched; it was promoted to the root at cutover. See <a href="../08-v2-isolation-and-cutover/">08-v2-isolation-and-cutover.md</a> for that history.)</p>
+<pre><code>repo-root/
+│
+├── packages/
+│   └── arm_common/              # shared Python package
+│       ├── arm_common/
+│       │   ├── schemas/         # Pydantic models (requests, responses, events)
+│       │   ├── models/          # SQLAlchemy ORM (Backend uses; others may import types only)
+│       │   ├── enums.py
+│       │   ├── ulid.py
+│       │   └── client/          # generated OpenAPI client for ripper/transcoder
+│       └── pyproject.toml
+├── services/
+│   ├── backend/                 # FastAPI app
+│   │   ├── arm_backend/
+│   │   ├── migrations/          # Alembic
+│   │   ├── Dockerfile
+│   │   └── pyproject.toml
+│   ├── ripper/                  # Python ripper
+│   │   ├── arm_ripper/
+│   │   ├── Dockerfile
+│   │   └── pyproject.toml
+│   ├── transcode/               # Python HandBrake wrapper
+│   │   ├── arm_transcode/
+│   │   ├── Dockerfile
+│   │   └── pyproject.toml
+│   └── ui/                      # Vue 3 + Vite
+│       ├── src/
+│       ├── package.json
+│       └── Dockerfile
+├── docs/
+│   └── arch/                    # this directory
+├── devtools/                    # contributor tooling
+├── docker-compose.yml           # the ARM stack
+├── .env.example
+└── pyproject.toml               # workspace root (uv)
+</code></pre>
+<p>Key property:
+- A single PR can change a Pydantic schema in <code>arm_common</code> and its producers + consumers in <code>services/*</code>. Protocol changes are always atomic.</p>
+<h2 id="configuration-strategy">Configuration strategy</h2>
+<p>Two tiers:</p>
+<p><strong>Tier 1 — bootstrap (env vars, sourced from <code>.env</code>).</strong> Compose reads <code>~/arm/.env</code> via <code>${VAR}</code> substitution and injects only what each container actually reads. See <a href="../06-deployment/#install-prefix-and-layout">06-deployment.md § Install prefix and layout</a> for how the installer seeds it.</p>
+<p><strong>What the user sets in <code>.env</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Var</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POSTGRES_USER</code></td>
+<td>Postgres role (Postgres image init contract)</td>
+</tr>
+<tr>
+<td><code>POSTGRES_PASSWORD</code></td>
+<td>Postgres password (Postgres image init contract)</td>
+</tr>
+<tr>
+<td><code>POSTGRES_DB</code></td>
+<td>Postgres database (Postgres image init contract)</td>
+</tr>
+<tr>
+<td><code>ARM_SERVICE_TOKEN</code></td>
+<td>Shared bearer token for service-to-service auth. Generated once by the install script (<code>openssl rand -hex 32</code>), never rotated in normal operation. Backend rejects any request without it. Defense-in-depth against misconfigured compose that exposes Backend's port.</td>
+</tr>
+<tr>
+<td><code>ARM_LOG_LEVEL</code></td>
+<td><code>debug</code>/<code>info</code>/<code>warn</code>/<code>error</code>. Optional, default <code>info</code>.</td>
+</tr>
+<tr>
+<td><code>PUID</code></td>
+<td>Numeric UID the ripper and transcoder drop to before writing <code>/raw</code> and <code>/media</code>. Should match the UID that owns the host-side mount (or the UID the user's media server runs as). Default <code>1000</code>.</td>
+</tr>
+<tr>
+<td><code>PGID</code></td>
+<td>Numeric GID shared by ripper and transcoder so group-writable handoff on <code>/raw</code> works. Should match the group that owns the host-side mount. Default <code>1000</code>.</td>
+</tr>
+<tr>
+<td><code>CDROM_GID</code></td>
+<td>Numeric GID of the host's optical group (<code>stat -c %g /dev/sr0</code>). Passed to ripper containers via <code>group_add</code> so the PUID-dropped process can read <code>/dev/sr*</code>. Default <code>44</code> (Debian/Ubuntu <code>cdrom</code>). Installer detects and writes this on first boot.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What compose derives and injects per-service:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Var</th>
+<th>Consumer</th>
+<th>Derivation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DATABASE_URL</code></td>
+<td>Backend</td>
+<td>Composed in <code>compose.yml</code> as <code>postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@arm-db:5432/${POSTGRES_DB}?sslmode=verify-full&amp;sslrootcert=/etc/ssl/arm/arm-ca.crt</code>. User never edits it directly.</td>
+</tr>
+<tr>
+<td><code>ARM_BACKEND_URL</code></td>
+<td>Ripper, Transcode, UI nginx</td>
+<td>Static <code>https://arm-backend:8443</code> — hard-coded in compose, not in <code>.env</code>. Clients verify against the merged system trust store, which includes the internal CA merged in at container startup. See <a href="#transport-tls">Transport (TLS)</a>.</td>
+</tr>
+<tr>
+<td><code>ARM_DRIVE_DEV</code></td>
+<td>Ripper (per-service)</td>
+<td>Declared per-ripper-service block in compose (<code>ARM_DRIVE_DEV: /dev/sr0</code> on <code>arm-ripper-sr0</code>, etc.).</td>
+</tr>
+<tr>
+<td><code>ARM_GPU_DEVICE</code></td>
+<td>Transcode (per-spawn)</td>
+<td>Injected at spawn time by Backend based on the claimed <code>gpus</code> row.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Crucially, Ripper and Transcode containers have no DB env vars.</strong> They talk only to Backend via the shared service token.</p>
+<p><strong>Tier 2 — runtime (DB).</strong> Everything the user tweaks in the UI: third-party API keys, retention policy, auto-transcode flag, Apprise URLs. Stored in the <code>config</code> table as plaintext; UI writes, Backend reads.</p>
+<p>No YAML files. No mounted <code>/etc/arm/*.conf</code>. The v2 <code>arm.yaml</code> pattern is retired.</p>
+<h2 id="authentication-model">Authentication model</h2>
+<h3 id="user-facing-ui-backend">User-facing (UI → Backend)</h3>
+<ul>
+<li><strong>Local users</strong> stored in the <code>users</code> table. Passwords hashed with argon2id.</li>
+<li>One <code>admin</code> account is seeded on first boot with the default password <code>admin</code> and <code>password_must_change=true</code>. The login response surfaces that flag, the UI redirects to <code>/change-password</code>, and <code>require_jwt</code> 403s every endpoint except <code>/api/auth/password</code> + <code>/api/auth/logout</code> until it's cleared. So the well-known default is not a security regression — it's a usability win (no risk of locking the operator out by losing the first-boot console printout) backed by the same gate that closed the v2 default-creds footgun.</li>
+<li><strong>Auth is JWT-based, not cookie-based.</strong> <code>POST /api/auth/login</code> with <code>{username, password}</code> → <code>{access_token, expires_at}</code>. UI stores the token in <code>localStorage</code> and sends it on every REST call as <code>Authorization: Bearer &lt;jwt&gt;</code>. WS auth is a first-message handshake (<code>{"op": "auth", "token": "&lt;jwt&gt;"}</code>); Backend closes the connection if auth doesn't arrive within 5 seconds.</li>
+<li>Tokens are signed HS256 with the value of <code>config.session_signing_key</code> (auto-generated on first Backend boot). Symmetric signing is fine because Backend is both issuer and verifier.</li>
+<li>Token TTL: 7 days, non-refreshing. User re-logs in once a week. No refresh token in v3.0 — simpler, and the friction is low for a single-user homelab.</li>
+<li>Logout is client-side (drop the token). There is no server-side token blocklist in v3.0. Emergency "log out everywhere" is a manual operation: rotate <code>config.session_signing_key</code> (via a future admin action or by hand), which invalidates every outstanding JWT at once.</li>
+<li>No MFA in v3.0. Single-user homelab scope. Revisit if scope changes.</li>
+</ul>
+<p><strong>Why JWT and not session cookies.</strong> Homelab operators deploy ARM in ways we can't predict, including behind reverse proxies with public hostnames. Session cookies touch GDPR/CCPA consent law; Bearer-in-header / localStorage sidesteps it. The single-user scope also means cookie-specific wins (easy server-side revocation, HttpOnly XSS protection) don't buy much here.</p>
+<p><strong>Why argon2id and not bcrypt.</strong> Argon2id is the 2015 Password Hashing Competition winner and the current OWASP recommendation. It is memory-hard — cost is tunable on three axes (time, memory, parallelism) instead of bcrypt's single rounds parameter — which forces an attacker to spend RAM per guess and neutralises the GPU/ASIC speedup bcrypt is vulnerable to. The <code>id</code> variant combines Argon2i's side-channel resistance with Argon2d's GPU resistance. Secondary wins: no 72-byte silent truncation (bcrypt's long-standing footgun), and the encoded hash embeds its parameters so cost can be raised later via transparent rehash-on-verify without a schema change. Implementation: <code>argon2-cffi</code>'s <code>PasswordHasher</code> with OWASP-default parameters (memory=19 MiB, iterations=2, parallelism=1); tune upward if login latency budget allows. bcrypt would not be <em>broken</em>, just a weaker default for something designed in 2026.</p>
+<p>The default-creds footgun that v2 has (ships with <code>admin</code>/<code>password</code> and does not force change) is closed by the random generated password.</p>
+<h3 id="service-to-service">Service-to-service</h3>
+<ul>
+<li>A single long-lived <strong>service token</strong> (<code>ARM_SERVICE_TOKEN</code>) lives in <code>.env</code> and is injected into Backend, Ripper, and Transcode containers via Compose.</li>
+<li>Every container reads it from its own environment. There is no authoritative DB copy — the <code>.env</code> file is the single source of truth.</li>
+<li>Attached to every ripper/transcoder REST call as <code>Authorization: Bearer &lt;token&gt;</code>.</li>
+<li>WebSocket connections authenticate via the same token in the initial <code>Sec-WebSocket-Protocol</code> header or via a one-time WS auth message.</li>
+</ul>
+<p>Generated once by the install script (<code>openssl rand -hex 32</code>). No rotation ceremony — on a private homelab LAN the threat model doesn't justify it. If a user accidentally commits or leaks <code>.env</code>, the manual remediation is: edit <code>.env</code> with a new token, <code>docker compose up -d</code> to recreate containers. Documented as troubleshooting, not routine.</p>
+<p><strong>Shared-token tradeoff.</strong> The service token identifies "an ARM internal service," not "this specific ripper vs that one." A ripper container compromised at the host level could present the same token and pretend to be a different ripper or the transcoder. The mitigation is authorization scoping at the endpoint level (see below), not token-per-service — on a private LAN with three or four containers the ceremony of per-service tokens buys little and costs a lot of operational surface.</p>
+<h3 id="authorization-rules">Authorization rules</h3>
+<p>Authentication answers "is this request from a known principal." Authorization answers "is that principal allowed to do <em>this</em>." Backend enforces the following rules, in addition to the bearer-token check:</p>
+<ul>
+<li><strong>Drive-scoped ripper endpoints</strong> (<code>POST /api/ripper/jobs/{job_id}/resume</code>, <code>POST /api/ripper/identify</code>, <code>PATCH /api/ripper/tracks/{track_id}/*</code>, <code>POST /api/ripper/jobs/{job_id}/complete</code>): Backend verifies that the referenced <code>job_id</code> (or the track's parent job) belongs to a <code>drive_id</code> whose <code>hostname</code> matches the ripper's registered hostname. A ripper cannot reset, complete, or fail a job on a different drive.</li>
+<li><strong>Task-scoped transcoder endpoints</strong> (<code>/api/transcoder/tasks/{task_id}/*</code>): Backend verifies the task is currently claimed by the hostname on the bearer context. An unclaimed task cannot be completed; a task claimed by a different transcoder cannot be touched.</li>
+<li><strong>UI-only endpoints</strong> (<code>/api/config</code>, <code>/api/sessions</code>, <code>/api/drives</code>, job CRUD): service token is rejected. UI JWT is required.</li>
+<li><strong>Ripper/transcoder endpoints</strong> (<code>/api/ripper/*</code>, <code>/api/transcoder/*</code>): UI JWT is rejected. Service token is required.</li>
+</ul>
+<p>These rules close the "compromised ripper acts as a different ripper" gap down to "compromised ripper acts as itself," which is the best an endpoint-layer check can do with a shared credential.</p>
+<h2 id="transport-tls">Transport (TLS)</h2>
+<p><strong>All HTTP-layer traffic is TLS, always.</strong> Both REST and WebSocket — intra-compose (UI ↔ Backend, Ripper ↔ Backend, Transcode ↔ Backend) and LAN-side (browser ↔ UI). There is no "plaintext internal hop." Same rule for REST and WS: if it's HTTP-based, it's <code>https://</code> / <code>wss://</code>.</p>
+<p>The Docker bridge network is technically not reachable from outside the host, but "not reachable today" isn't the same as "not reachable." A misconfigured port publish, a compromised sibling container, or a future docker-network gotcha is enough to turn an intra-compose plaintext hop into a JWT-sniffing or service-token-sniffing opportunity. TLS-everywhere removes the class of problem instead of depending on operator discipline.</p>
+<p><strong>Deployment scope: LAN-only, never internet-exposed.</strong> ARM v3 is designed to be reached from a browser on the same LAN (or through a VPN into that LAN). It is not intended to be exposed to the public internet, ever — the threat model and the single-admin / homelab auth surface assume a trusted network boundary. Users who want remote access should run WireGuard or Tailscale back to their home network rather than port-forwarding <code>8081</code>. This framing has a direct consequence for certs: Let's Encrypt's HTTP-01 challenge requires a publicly-reachable HTTP server, which we explicitly do not have; even DNS-01 requires a real owned domain just to cert a LAN service, which is ceremony without payoff. The internal CA below is the expected path for every hop, including browser ↔ UI.</p>
+<h3 id="cert-layout">Cert layout</h3>
+<p>Everything lives under <code>~/arm/certs/</code> on the host (see <a href="../06-deployment/#install-prefix-and-layout">06-deployment.md § Install prefix and layout</a>) and is generated by the installer — the user never touches <code>openssl</code>.</p>
+<ul>
+<li><strong>Internal CA, generated once at install time.</strong> <code>install.sh</code> produces <code>~/arm/certs/arm-ca.key</code> (EC P-384, mode <code>0400</code>) + <code>~/arm/certs/arm-ca.crt</code> with a 10-year expiry. Unique per install; no two ARM deployments share a CA.</li>
+<li><strong>Per-service leaf certs</strong>, signed by the internal CA, one per listening service: <code>arm-backend.{key,crt}</code>, <code>arm-ui.{key,crt}</code>, <code>arm-db.{key,crt}</code>, and <code>arm-ripper-sr{N}.{key,crt}</code> — one leaf per optical drive detected at install time. SANs cover the compose hostname (<code>arm-backend</code>, <code>arm-db</code>, <code>arm-ripper-sr0</code>, etc.); for <code>arm-ui</code>, the leaf additionally SANs the host's LAN hostname(s) if the installer can determine them. Also 10-year expiry.</li>
+<li><strong>Every container bind-mounts <code>~/arm/certs/arm-ca.crt</code> read-only</strong> at <code>/etc/ssl/arm/arm-ca.crt</code>. Listening services additionally mount their own leaf <code>.crt</code> + <code>.key</code> at <code>/etc/ssl/arm/tls.crt</code> / <code>/etc/ssl/arm/tls.key</code>.</li>
+<li><strong>Browser-facing UI cert</strong>: by default, nginx uses the same internal-CA-signed leaf as every other hop. Browsers show an "untrusted CA" warning on first visit; users either click through or (recommended) import <code>~/arm/certs/arm-ca.crt</code> into their browser/OS trust store once, after which the warning goes away for every device that trusts the CA. Advanced users who already run their own home-lab CA or have a wildcard cert for a LAN-local domain can override via <code>TLS_CERT_PATH</code> / <code>TLS_KEY_PATH</code> in <code>.env</code>. Either way, the stack is never plaintext.</li>
+<li><strong>Postgres is TLS too.</strong> The <code>arm-db</code> container runs Postgres with <code>ssl=on</code>, using the <code>arm-db.{crt,key}</code> leaf from the internal CA. Backend connects with <code>sslmode=verify-full</code> against the same mounted CA. No carve-out: the "compromised sibling container sniffs a plaintext hop" threat model that motivates TLS-everywhere for HTTP applies identically to DB traffic — <code>DATABASE_URL</code> carries Postgres credentials on every connection, and rows in flight include argon2id hashes, <code>config.session_signing_key</code>, and third-party API keys.</li>
+</ul>
+<h3 id="ca-lifecycle-and-key-security">CA lifecycle and key security</h3>
+<ul>
+<li><strong>Who generates it:</strong> the installer (<code>install.sh</code>), running on the host as the invoking user, using the host's <code>openssl</code>. Never baked into an image; never generated inside a container. Every install gets a unique CA.</li>
+<li><strong>Where the key lives:</strong> <code>~/arm/certs/arm-ca.key</code> on the host filesystem, mode <code>0400</code>, owned by the invoking user. <strong>The CA key is never mounted into any service container.</strong> Only <code>arm-ca.crt</code> (the public cert) is bind-mounted into containers. Once leaves are issued, no running service needs the key at all; it sits idle on the host until the user adds a new drive or rotates.</li>
+<li><strong>Adding a new drive:</strong> user edits compose (or, better, reruns <code>install.sh</code> to re-probe and append), which signs a new leaf against the existing CA key. Existing leaves keep working; no re-trust required on LAN clients.</li>
+<li><strong>Rotation</strong> is explicit and rare: <code>install.sh --rotate-ca</code> regenerates the CA and every leaf with a confirmation prompt, then the user re-imports <code>arm-ca.crt</code> on every LAN client that previously trusted it. There is no OCSP, no CRL, no auto-rotation — this is the nuclear option for suspected compromise.</li>
+<li><strong>Threat model.</strong> Host compromise = CA compromise; the design does not try to defend a compromised host from itself. The real risk is accidental exposure of <code>arm-ca.key</code> — chiefly via a backup written to somewhere less protected than the host. Back it up alongside <code>.env</code> and treat it like a password.</li>
+</ul>
+<h3 id="container-side-trust-store-merged-bundle-at-startup">Container-side trust store: merged bundle at startup</h3>
+<p>Each service image has an entrypoint step that runs before the main process:</p>
+<pre><code class="language-sh">cp /etc/ssl/arm/arm-ca.crt /usr/local/share/ca-certificates/arm-ca.crt
+update-ca-certificates
+</code></pre>
+<p>This merges the mounted per-install internal CA into <code>/etc/ssl/certs/ca-certificates.crt</code> alongside the Mozilla root bundle that ships with the Debian-based base image. The merged bundle is what Python's <code>ssl</code> module, <code>httpx</code> (via the system default), <code>curl</code>, <code>wget</code>, and everything else picks up — without any per-client <code>verify=</code> plumbing in application code.</p>
+<p>This pattern intentionally avoids setting <code>REQUESTS_CA_BUNDLE</code> or <code>SSL_CERT_FILE</code> to the internal CA alone: doing so would make httpx trust <em>only</em> that CA, and outbound calls to <code>api.themoviedb.org</code> / Apprise endpoints / SMTP-over-TLS would fail public-cert verification. The merge lets the same trust store handle both public outbound and intra-compose internal HTTPS.</p>
+<p>The division of responsibility is:
+- <strong>Installer</strong> → generates CA, drops <code>arm-ca.crt</code> into <code>~/arm/certs/</code>, compose bind-mounts it into each container at <code>/etc/ssl/arm/arm-ca.crt</code>.
+- <strong>Image</strong> → entrypoint merges mounted CA into system bundle on startup. Runs in ~50ms per container start. Keeps images hermetic (no per-install data baked in).
+- <strong>Application code</strong> → plain <code>httpx.AsyncClient()</code> with default trust. No per-request or per-client <code>verify=</code> argument needed.</p>
+<h3 id="envurl-consequences">Env/URL consequences</h3>
+<ul>
+<li><code>ARM_BACKEND_URL</code> is <code>https://arm-backend:8443</code> (not <code>http://…:8000</code>). Backend listens on 8443 with TLS; port 8000 does not exist.</li>
+<li>UI nginx proxies <code>/api/*</code> to <code>https://arm-backend:8443</code>, using the merged system trust store (and therefore the internal CA) as trust anchor. <code>/ws/*</code> the same (<code>wss://arm-backend:8443/ws</code>).</li>
+<li>Rippers and Transcoders dial <code>https://arm-backend:8443</code> directly, verifying the server cert via the same merged trust store.</li>
+<li><code>DATABASE_URL</code> carries <code>?sslmode=verify-full&amp;sslrootcert=/etc/ssl/arm/arm-ca.crt</code>. Backend refuses to connect to a Postgres that presents any cert not signed by the internal CA or not matching <code>arm-db</code>. The <code>arm-db</code> container is launched with <code>command: -c ssl=on -c ssl_cert_file=/etc/ssl/arm/tls.crt -c ssl_key_file=/etc/ssl/arm/tls.key</code>, mounting its leaf the same way every other service does.</li>
+</ul>
+<h3 id="what-we-deliberately-do-not-do">What we deliberately do NOT do</h3>
+<ul>
+<li><strong>mTLS.</strong> Client cert distribution + per-service cert issuance on startup is operational surface the stack doesn't need. The shared service token authenticates the caller; server-side TLS protects it in transit. mTLS would let us drop the shared token eventually, but the cert-per-container story is more moving parts than a homelab wants.</li>
+<li><strong>Auto-rotation.</strong> Certs expire in 10 years. If the user cares about rotation, they rerun <code>install.sh --rotate-ca</code> and <code>docker compose up -d</code>.</li>
+<li><strong>Public-CA-issued certs.</strong> Let's Encrypt and other public CAs sign only publicly-resolvable hostnames, and we've designed for LAN-only deployment — so no public CA fits the default path. The <code>TLS_CERT_PATH</code> / <code>TLS_KEY_PATH</code> override exists for users who have their own setup (home-lab CA, wildcard cert, ACME-against-a-private-ACME-server like <code>step-ca</code>), but nothing in v3.0 automates or recommends a public-CA integration.</li>
+</ul>
+<h2 id="websocket-security">WebSocket security</h2>
+<p>The WS endpoint (<code>/ws</code> on Backend) is exposed through the same nginx that fronts REST and is WSS end-to-end — browser ↔ UI nginx is <code>wss://</code> (external cert), UI nginx ↔ Backend is <code>wss://arm-backend:8443</code> (internal CA). There is no plaintext WS hop at any layer; see <a href="#transport-tls">Transport (TLS)</a>. Specific rules beyond what the general auth model covers:</p>
+<ul>
+<li><strong>First-message auth window.</strong> A freshly-upgraded WS connection is in a <code>pending_auth</code> state. The only op accepted in that state is <code>{"op": "auth", "token": "..."}</code>; anything else closes the connection with code 4401. Backend closes the connection after 5 seconds if no auth message arrives. Subscribes sent before the server has ack'd auth are rejected, not queued.</li>
+<li><strong>Origin validation at upgrade.</strong> Browsers send <code>Origin</code> on WS handshakes but do <em>not</em> enforce same-origin the way they do for XHR — a malicious page could otherwise open a WS to Backend while a logged-in user is on another tab. Backend matches <code>Origin</code> against an allowlist (the configured UI hostname(s), configurable in <code>.env</code> as <code>ARM_ALLOWED_ORIGINS</code>). Service-token connections skip this check (they come from sibling containers with no <code>Origin</code>).</li>
+<li><strong>Per-topic authorization.</strong> After auth, topic subscription is gated by principal type:<ul>
+<li>UI-JWT principals may subscribe to: <code>ripper.progress.{job_id}</code>, <code>ripper.events</code>, <code>transcode.progress.{task_id}</code>, <code>transcode.events</code>, <code>system.events</code>, <code>logs.{job_id}</code>.</li>
+<li>Service-token ripper principals may subscribe <em>only</em> to their own inbound command topic (e.g. <code>ripper.commands.{drive_id}</code>, used by Backend to push identify-resolution events back to the owning ripper). A ripper cannot subscribe to another drive's command topic, nor to any UI-facing topic.</li>
+<li>Service-token transcoder principals may subscribe <em>only</em> to <code>transcoder.commands.{task_id}</code> for the task they hold a claim on.</li>
+<li>Unknown topics are rejected, not silently ignored.</li>
+</ul>
+</li>
+<li><strong>Backend → ripper command scoping.</strong> Outbound commands (identify-resolution events, cancellation) are routed to the specific ripper whose registered <code>hostname</code> matches the <code>drives</code> row for the target <code>job_id</code>. The topic name (<code>ripper.commands.{drive_id}</code>) is the mechanism; the authorization check above is the guarantee.</li>
+<li><strong>JWT expiry vs long-lived WS.</strong> Tokens are validated at handshake only. A WS opened with a still-valid token remains authorized until the client closes it or the network drops — even if the token expires mid-connection. With 7-day token TTL and the longest realistic rip session measured in hours, this is the simpler behavior. When an expired token causes a REST call to 401, the UI forces re-login and reconnects the WS with the new token; server-side eviction at token expiry is unnecessary complexity for the single-user homelab scope.</li>
+<li><strong>Rate limiting.</strong> Not enforced in v3.0. A per-connection cap on inbound messages/sec could be added later; for the scale of one or two rippers pushing progress at ~1 Hz it is not load-bearing. Documented as accepted.</li>
+</ul>
+<h2 id="secrets-handling">Secrets handling</h2>
+<ul>
+<li>Third-party API keys (TMDB, OMDB, MusicBrainz) and Apprise URLs are stored <strong>plaintext</strong> in the <code>config</code> table.</li>
+<li>Consequence: DB dumps contain secrets. Treat Postgres backups as sensitive files.</li>
+<li>No secrets are logged. Log lines that touch <code>config</code> rows MUST redact the API-key/URL fields — enforced by a structured-logging helper that knows which fields to drop.</li>
+</ul>
+<h2 id="logging">Logging</h2>
+<h3 id="format">Format</h3>
+<p>Every service logs <strong>structured JSON to stdout</strong>. One event per line (JSONL). Required fields on every line:</p>
+<pre><code class="language-json">{
+  &quot;ts&quot;: &quot;2026-04-18T14:32:10.123Z&quot;,
+  &quot;level&quot;: &quot;info&quot;,
+  &quot;service&quot;: &quot;arm-ripper-sr0&quot;,
+  &quot;job_id&quot;: &quot;job_01HXYZ…&quot;,
+  &quot;track_id&quot;: &quot;trk_01HXYZ…&quot;,
+  &quot;session_application_id&quot;: null,
+  &quot;msg&quot;: &quot;track rip complete&quot;,
+  &quot;extra&quot;: { … arbitrary structured context … }
+}
+</code></pre>
+<p><code>job_id</code>, <code>track_id</code>, <code>session_application_id</code> may be null when the log line is not in the context of a specific job (startup, config reload, etc.). When a log is inside a job context, they MUST be populated — this is what makes the per-job log view work.</p>
+<h3 id="persistence">Persistence</h3>
+<ul>
+<li>Logs are emitted to stdout (so <code>docker logs</code> works).</li>
+<li>Logs are ALSO appended to <code>/logs/&lt;service&gt;.log</code> (shared volume). Each service manages its own file with size-based rotation (10MB × 5 files = 50MB per service ceiling).</li>
+<li>The Backend reads <code>/logs/*.log</code> on demand to serve the per-job log view in the UI — a simple grep on <code>job_id</code> across all service logs.</li>
+<li>A zip-for-bug-report endpoint in the UI (<code>GET /api/logs/{job_id}.zip</code>) streams the per-job slice of every service log, ready to drag onto a GitHub issue. This mirrors the v2 workflow documented in <a href="../../CONTRIBUTING.md">CONTRIBUTING.md</a>.</li>
+</ul>
+<h3 id="debug-level">DEBUG level</h3>
+<ul>
+<li><code>ARM_LOG_LEVEL=debug</code> can be set per-service via compose override. No UI toggle in v3.0 — restart-to-change is acceptable for a homelab.</li>
+<li>The UI shows the current log level per service on a diagnostics page and links to the bug-report zip endpoint.</li>
+</ul>
+<h3 id="what-we-dont-do">What we don't do</h3>
+<ul>
+<li>No Loki / Promtail / ELK. Gold-plated for this scale. Users who want it can ship <code>/logs</code> to their own stack.</li>
+<li>No syslog. No journald.</li>
+</ul>
+<h2 id="observability-beyond-logs">Observability beyond logs</h2>
+<p><strong>v3.0 ships logs only.</strong> No Prometheus <code>/metrics</code>, no OpenTelemetry traces. Homelab operators who need them can scrape Docker engine metrics or add their own sidecars.</p>
+<p>The explicit structure of the typed event log (<code>events</code> table) is the closest thing to metrics in v3.0 — an operator can SQL it for "how many rips succeeded this week" without an external TSDB.</p>
+<h2 id="code-quality">Code quality</h2>
+<p>A single pre-commit stack, configured at the workspace root, gates every Python file in the repo. All four packages (<code>arm_common</code>, <code>arm_backend</code>, <code>arm_ripper</code>, <code>arm_transcode</code>) are held to the same bar.</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Role</th>
+<th>Config</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ruff</strong> (<code>format</code> + <code>check --fix</code>)</td>
+<td>Formatter + linter. One Rust-backed binary covering what black, isort, flake8, bugbear, and pyupgrade did separately.</td>
+<td><code>[tool.ruff]</code> in <a href="../../pyproject.toml">pyproject.toml</a></td>
+</tr>
+<tr>
+<td><strong>mypy</strong></td>
+<td>Strict type checker. Runs via <code>uv run</code> so it resolves against the real synced workspace graph, not a pinned subset maintained per-hook.</td>
+<td><code>[tool.mypy]</code> in <a href="../../pyproject.toml">pyproject.toml</a></td>
+</tr>
+<tr>
+<td><strong>pre-commit</strong></td>
+<td>Orchestrates the above. Hooks run against the whole repository.</td>
+<td><a href="../../.pre-commit-config.yaml">.pre-commit-config.yaml</a></td>
+</tr>
+</tbody>
+</table>
+<p>The ruff + uv pairing is deliberate: both ship from Astral and wire together cleanly, and the full sweep finishes well under a second on a warm cache. Black + isort + flake8 would reproduce the same rules across four tools and four configs for no gain.</p>
+<p><strong>What strict mypy buys us.</strong> Untyped returns, untyped calls, untyped defs, and unreachable code all fail. Every workspace package ships a <code>py.typed</code> marker so cross-package imports are trusted as typed rather than silently collapsed to <code>Any</code>.</p>
+<p><strong>Install and run (from the repo root):</strong></p>
+<pre><code class="language-bash">uv sync                                  # sync tools into .venv
+uv run pre-commit install                # wire up the git hook
+uv run pre-commit run --all-files        # run over everything
+uv run pre-commit autoupdate             # bump hook pins
+</code></pre>
+<p>Pre-commit changes <code>cwd</code> to the git root before executing hooks, which is why the mypy hook's <code>--config-file=pyproject.toml</code> and <code>-p arm_common -p arm_backend -p arm_ripper -p arm_transcode</code> package list are phrased repo-root-relative — they resolve correctly no matter which directory invokes pre-commit.</p>
+<p><strong>No docstring-body reformatter.</strong> The historical tool for this (<code>docformatter</code>) is effectively unmaintained and its transitive dep doesn't build on Python 3.14. Ruff covers docstring quote style and whitespace; docstring content is a review concern.</p>
+<p><strong>Not yet in this gate.</strong> <code>pytest</code> lands with the Tier 1 tests described below — quality gates and tests come online together.</p>
+<h2 id="testing">Testing</h2>
+<p>Testing has its own document: <strong><a href="../09-testing/">09-testing.md</a></strong>. It covers
+the testing philosophy, the as-built Backend test architecture, the
+coverage policy and conventions, and the still-open ripper/transcode
+contract tier and Big Buck Bunny integration rig.</p>
+<h2 id="notifications">Notifications</h2>
+<p>v3 ships <strong>Apprise with a native pass-through config</strong>. Users paste Apprise URLs into a textarea in the UI; Backend feeds those URLs directly to <code>apprise.Apprise().add(url)</code> with no ARM-side per-service dictionary.</p>
+<p>Rationale: v2 hand-maintained a 30-service dictionary mapping ARM-specific keys to Apprise URLs and went stale — new services (Signal, Home Assistant, MQTT, Pushover, Fluxer) piled up as feature requests, and bug reports accumulated around URL-assembly edge cases. Passing URLs through verbatim means every service Apprise supports works the day it supports it, with no PR to ARM.</p>
+<ul>
+<li>Backend emits typed events to the <code>events</code> table and on WS topics.</li>
+<li><code>NotificationDispatcher</code> interface in the Backend; v3.0 ships one implementation (<code>AppriseDispatcher</code>) that iterates <code>config.notification_apprise_urls</code> on each event.</li>
+<li>Event naming convention: <code>&lt;domain&gt;.&lt;verb_past_tense&gt;</code> (e.g. <code>rip.completed</code>, <code>transcode.failed</code>).</li>
+<li>Event payloads share an envelope: <code>{event_id, event_type, emitted_at, job_id?, track_id?, data: {...}}</code>. New payload shapes are added by emitting new event types, never by mutating the shape of an existing type.</li>
+</ul>
+<p>Specific event types grow organically as features land. The event <em>taxonomy</em> is not pre-enumerated — but the <em>naming rule</em> and the <em>envelope shape</em> are fixed so new events slot in without protocol churn.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../04-data-model/" class="btn btn-neutral float-left" title="04. Data Model"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../06-deployment/" class="btn btn-neutral float-right" title="06. Deployment">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../04-data-model/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../06-deployment/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

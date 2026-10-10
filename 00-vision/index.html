@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>00. Vision - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "00. Vision";
+        var mkdocs_page_input_path = "00-vision.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">00. Vision</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#who-v3-is-for">Who v3 is for</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#problems-v3-must-solve">Problems v3 must solve</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-principles">Design principles</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#1-bits-first-metadata-second-transcode-third">1. Bits first, metadata second, transcode third</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#2-one-service-one-responsibility">2. One service, one responsibility</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#3-backend-is-the-single-internet-boundary">3. Backend is the single internet boundary</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#4-postgres-is-the-source-of-truth-stdout-is-the-source-of-logs">4. Postgres is the source of truth; stdout is the source of logs</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#5-crash-safe-by-default">5. Crash-safe by default</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#6-no-sacred-cows">6. No sacred cows</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#success-criteria-for-v30">Success criteria for v3.0</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../01-architecture/">01. Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02-job-lifecycle/">02. Job Lifecycle</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05-cross-cutting/">05. Cross Cutting</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06-deployment/">06. Deployment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09-testing/">09. Testing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10-iso-source-ripping/">10. ISO Source Ripping</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">00. Vision</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/00-vision.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="00-vision-goals-and-principles">00 — Vision, Goals, and Principles</h1>
+<h2 id="who-v3-is-for">Who v3 is for</h2>
+<p><strong>Single-admin homelab users.</strong> One person running ARM for their own household. Not a shared service, not a multi-tenant platform, not a commercial product.</p>
+<p>The user base in practice includes many <strong>data-hoarders</strong> — people who rip to preserve the raw bits, not just to feed a streaming app. This shapes retention defaults (keep raw forever) and session semantics (re-transcode from raw is a first-class operation).</p>
+<h2 id="problems-v3-must-solve">Problems v3 must solve</h2>
+<p>Two pain points drove the decision to rebuild rather than incrementally refactor v2:</p>
+<ol>
+<li>
+<p><strong>Clean service boundaries, especially for resource isolation.</strong> In v2, running multiple rips concurrently causes compute contention inside a single container. Rippers, UI, and transcoding all share the same process tree, so heavy work in one area degrades every other area. v3 must separate these so that N concurrent rips and a transcode cannot starve the UI.</p>
+</li>
+<li>
+<p><strong>Batch-rip resumability.</strong> A user who queues five discs and loses power mid-rip on #3 has, today, no way to recover. The system treats each rip as atomic and non-resumable. v3 must checkpoint finely enough that a power event does not discard completed work, and that partially-completed work is re-queued automatically on restart.</p>
+</li>
+</ol>
+<p>A third, adjacent, pain point surfaced during scoping: users want <strong>Sessions</strong> — the ability to rip once and transcode many times with different presets. v2 conflates rip and transcode into one irreversible pipeline. v3 separates them.</p>
+<h2 id="design-principles">Design principles</h2>
+<h3 id="1-bits-first-metadata-second-transcode-third">1. Bits first, metadata second, transcode third</h3>
+<p>The three stages are decoupled. A rip succeeds the moment the bits are safely on disk and recorded in the DB. Metadata enrichment and transcoding are independent downstream stages that can fail, retry, or be re-run without touching the raw.</p>
+<h3 id="2-one-service-one-responsibility">2. One service, one responsibility</h3>
+<p>Every container has a single reason to exist:</p>
+<ul>
+<li>The <strong>Ripper</strong> exists to turn a disc into bytes on disk.</li>
+<li>The <strong>Backend</strong> exists to own state and speak to the internet.</li>
+<li>The <strong>Transcode container</strong> exists to turn one raw into one output.</li>
+<li>The <strong>UI</strong> exists to render state and take commands.</li>
+</ul>
+<p>No service does "a little bit of the other guy's job."</p>
+<h3 id="3-backend-is-the-single-internet-boundary">3. Backend is the single internet boundary</h3>
+<p>The Ripper and Transcode containers <strong>never talk to the internet</strong>. All external calls (TMDB/OMDB/MusicBrainz/Apprise/webhooks) originate from the Backend. This means workers are simpler to run (no API keys, no outbound firewall holes), and external credentials live in exactly one place.</p>
+<h3 id="4-postgres-is-the-source-of-truth-stdout-is-the-source-of-logs">4. Postgres is the source of truth; stdout is the source of logs</h3>
+<p>Durable state lives in Postgres. Logs are structured JSON emitted to stdout and appended to a shared volume. We do not invent a third persistence mechanism for state, and we do not hide debug data behind a query language.</p>
+<h3 id="5-crash-safe-by-default">5. Crash-safe by default</h3>
+<p>Every long-running operation is checkpoint-able. A worker crash must not discard completed sub-work. A stale "in-progress" row with no live worker is the signal for "re-queue me."</p>
+<h3 id="6-no-sacred-cows">6. No sacred cows</h3>
+<p>This is a greenfield rebuild. Any assumption inherited from v2 is open for review. When in doubt, re-decide from first principles rather than preserve an old shape.</p>
+<h2 id="success-criteria-for-v30">Success criteria for v3.0</h2>
+<p>v3.0 is ready when:</p>
+<ul>
+<li>Five discs queued across two drives complete without manual intervention, including a simulated power-cut mid-batch that resumes cleanly.</li>
+<li>A ripped disc can have a new session applied from the UI months later without re-ripping.</li>
+<li>A single PR can change a protocol payload and its two endpoints (ripper side + backend side) atomically.</li>
+<li>A bug-reporter can download one log file scoped to one job_id and attach it to a GitHub issue.</li>
+<li>Fresh install on a new host lands at the login screen in under 5 minutes.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../architecturesummary/" class="btn btn-neutral float-left" title="Architecture Summary"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../01-architecture/" class="btn btn-neutral float-right" title="01. Architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../architecturesummary/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../01-architecture/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

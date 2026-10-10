@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>10. ISO Source Ripping - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "10. ISO Source Ripping";
+        var mkdocs_page_input_path = "10-iso-source-ripping.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../00-vision/">00. Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../01-architecture/">01. Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02-job-lifecycle/">02. Job Lifecycle</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05-cross-cutting/">05. Cross Cutting</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06-deployment/">06. Deployment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09-testing/">09. Testing</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">10. ISO Source Ripping</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#what-this-is-and-the-name-clash-to-avoid-up-front">What this is — and the name clash to avoid up front</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-shape-in-one-sentence">The shape, in one sentence</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#why-now-whats-wrong-with-today">Why now / what's wrong with today</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-principle-reuse-two-things-verbatim">Design principle: reuse two things verbatim</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#target-architecture-mirror-of-the-transcode-dispatcher">Target architecture (mirror of the transcode dispatcher)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#the-rip-task-table-dispatcher">The rip-task table + dispatcher</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#the-worker-a-run-one-task-then-exit-ripper-mode">The worker: a "run one task, then exit" ripper mode</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#drive-identity-the-one-genuine-new-wrinkle">Drive identity — the one genuine new wrinkle</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-iso-source-library-now-uploads-later">The ISO source: library now, uploads later</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#backend-changes">Backend changes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#ripper-changes">Ripper changes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-disappears">What disappears</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#deployment">Deployment</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#concurrency">Concurrency</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#migration-the-smoke-test-becomes-a-thin-client">Migration: the smoke test becomes a thin client</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#decisions-needed">Decisions needed</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#references">References</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">10. ISO Source Ripping</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/10-iso-source-ripping.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="10-iso-source-ripping">10 — ISO-Source Ripping</h1>
+<p><strong>Status: proposed (design only).</strong> Nothing here is built yet. This doc is the
+design we agreed to write before touching code, so the shape can be reviewed
+first. Open decisions are collected in <a href="#decisions-needed">§ Decisions needed</a>.</p>
+<h2 id="what-this-is-and-the-name-clash-to-avoid-up-front">What this is — and the name clash to avoid up front</h2>
+<p>"ISO" means two unrelated things in v3, pointing in opposite directions:</p>
+<ul>
+<li><strong>ISO as <em>output</em></strong> — <code>rip_presets.output_mode = 'iso'</code> produces a full-disc
+  <code>.iso</code> image <em>from a physical disc</em> instead of per-title MKVs (see
+  <a href="../04-data-model/">04-data-model.md</a>). Already in the data model.</li>
+<li><strong>ISO as <em>source</em></strong> — rip <em>from</em> an existing <code>.iso</code> file as input, through the
+  normal scan → identify → rip (→ transcode) pipeline, no physical disc involved.</li>
+</ul>
+<p><strong>This document is exclusively about the second one.</strong> It's always called
+<em>ISO-source ripping</em> or <em>ISO ingestion</em>, never just "ISO ripping".</p>
+<h2 id="the-shape-in-one-sentence">The shape, in one sentence</h2>
+<p>An ISO-source ripper is an <strong>ephemeral, backend-spawned worker container</strong> — the
+<strong>transcode-container lifecycle</strong>, not a long-running service: the backend
+spawns one per ISO on demand, it runs the rip, reports, and <strong>exits</strong>
+(<code>auto_remove</code>). It is <em>not</em> a persistent <code>arm-ripper-iso</code> daemon, and the
+backend never hand-rolls <code>docker run</code> plumbing in a script.</p>
+<blockquote>
+<p><strong>Design directive (owner):</strong> ISO rippers must be spawned on demand like the
+GPU/transcode containers, not run long. The eventual front door is <strong>UI file
+upload → spawn an ephemeral ISO ripper per upload</strong>; the upload half is
+deferred, the ephemeral-spawn architecture is what we lock in now.</p>
+</blockquote>
+<h2 id="why-now-whats-wrong-with-today">Why now / what's wrong with today</h2>
+<p>ISO-source ripping already half-exists, but only as a <strong>test hook</strong>:</p>
+<ul>
+<li>The ripper takes <code>ARM_MANUAL_TRIGGER_ISO=/path/to.iso</code>
+  (<a href="../../services/ripper/arm_ripper/main.py#L121-L161">main.py:121-161</a>): treats
+  the ISO as its bound "device", rips <strong>once</strong> on startup, then <strong>idles forever</strong>
+  so an operator can poke at it — the exact opposite of ephemeral.</li>
+<li>No API, no UI, no spawn mechanism. You hand-launch a privileged container per
+  ISO, which is why <a href="../../devtools/iso-smoke.sh">devtools/iso-smoke.sh</a> grew
+  into a ~580-line orchestrator (fixture fetch, key scrape, <code>docker run</code>
+  assembly, live-ripper stop/restart, transcode trigger, polling, teardown).</li>
+</ul>
+<p>The good news: <strong>the backend already spawns ephemeral workers exactly this way
+for transcoding.</strong> ISO ingestion is the same mechanism pointed at a different
+image — almost no new orchestration primitives.</p>
+<h2 id="design-principle-reuse-two-things-verbatim">Design principle: reuse two things verbatim</h2>
+<ol>
+<li><strong>The disc pipeline.</strong> An ISO is a source the scan layer already understands —
+   <a href="../../services/ripper/arm_ripper/source.py">source.py</a> routes
+   <code>makemkv_source_url()</code> to <code>iso:&lt;path&gt;</code> vs <code>dev:&lt;path&gt;</code>, and scan loop-mounts a
+   file (<a href="../../services/ripper/arm_ripper/scan/disc_probe.py">disc_probe.py</a>).
+   Everything downstream of scan — identify, track selection, rip-start,
+   <code>PATCH /tracks</code>, rip-complete, session auto-apply, transcode — is
+   <strong>source-blind and untouched.</strong></li>
+<li><strong>The transcode dispatcher.</strong> The backend's
+   <a href="../../services/backend/arm_backend/transcode_dispatcher.py">transcode_dispatcher.py</a>
+   is the template: a task table, a dispatcher tick that spawns
+   <code>containers.run(..., detach=True, auto_remove=True)</code>
+   (<a href="../../services/backend/arm_backend/transcode_dispatcher.py#L392-L403">:392-403</a>),
+   a worker that claims its task and exits, a concurrency cap, a stale-claim
+   sweep. ISO ingestion clones this with a <code>rip_tasks</code> table and the ripper image.</li>
+</ol>
+<p>So this feature is <strong>not</strong> a new rip path and <strong>not</strong> a new orchestration
+pattern. It is: a task table + dispatcher (cloned from transcode), an enqueue
+endpoint, and a small "run one task then exit" mode in the ripper.</p>
+<h2 id="target-architecture-mirror-of-the-transcode-dispatcher">Target architecture (mirror of the transcode dispatcher)</h2>
+<pre><code> UI / smoke         Backend                              ephemeral arm-ripper-iso
+  │  pick ISO+sess     │                                  (spawned per task, --rm)
+  ├─POST /api/iso/rips▶│ validate ISO under library root          │
+  │  {iso, session}    │ INSERT rip_tasks (QUEUED) ─┐             │
+  │◀── {task_id} ──────┤                            │             │
+  │                    │  ── rip dispatcher tick ──◀┘             │
+  │                    │  slots = MAX_PARALLEL_ISO_RIPS - in_prog │
+  │                    │  docker containers.run(ARM_ISO_RIPPER_IMAGE,
+  │                    │      env ARM_RIP_TASK_ID, --rm) ────────▶│ starts
+  │                    │◀─ POST /ripper/iso-tasks/{id}/claim ─────┤ claim (CAS)
+  │                    │   → {drive_id, /isos/&lt;name&gt;, session}    │
+  │                    │◀─ POST /ripper/identify (creates Job) ───┤ scan→identify
+  │                    │◀─ rip-start, PATCH /tracks, rip-complete ┤ rip (pipeline)
+  │◀─ job in /api/jobs │   session auto-applies → transcode       │ exits, auto-removed
+</code></pre>
+<h3 id="the-rip-task-table-dispatcher">The rip-task table + dispatcher</h3>
+<p>A <code>rip_tasks</code> table mirroring <code>transcode_tasks</code>: <code>status</code>
+(QUEUED|IN_PROGRESS|DONE|FAILED), <code>claimed_by</code>, <code>claim_heartbeat_at</code>, <code>attempts</code>,
+plus <code>source_ref</code> (library-relative ISO name) and <code>session_id</code>. A <strong>rip
+dispatcher</strong> background loop — a near-copy of <code>spawn_pending()</code>
+(<a href="../../services/backend/arm_backend/transcode_dispatcher.py#L229-L299">transcode_dispatcher.py:229-299</a>)
+— each tick:</p>
+<ol>
+<li>counts live <code>rip_tasks</code> IN_PROGRESS, computes free slots vs
+   <code>MAX_PARALLEL_ISO_RIPS</code>,</li>
+<li>dequeues QUEUED rows FIFO with <code>FOR UPDATE SKIP LOCKED</code>,</li>
+<li>spawns one ephemeral ripper per task via the existing docker-py client
+   (<a href="../../services/backend/arm_backend/main.py#L98-L108">main.py:98-108</a>) with
+   <code>auto_remove=True</code>, a unique hostname <code>arm-ripper-iso-{task_id[-12:]}</code>, and a
+   <code>{label: task_id}</code> for cancel/force-stop,</li>
+<li>a <strong>stale-claim sweep</strong> (reusing the 90 s threshold pattern,
+   <a href="../../services/backend/arm_backend/config.py#L63">config.py:63</a>) requeues or
+   fails tasks whose worker died mid-rip — this <em>is</em> the crash-recovery story for
+   ISO jobs, replacing the physical ripper's boot-probe.</li>
+</ol>
+<h3 id="the-worker-a-run-one-task-then-exit-ripper-mode">The worker: a "run one task, then exit" ripper mode</h3>
+<p>The ripper gains a third entry mode beside "poll a physical drive" and the
+legacy one-shot env var. Given <code>ARM_RIP_TASK_ID</code>, it:</p>
+<ol>
+<li><code>POST /api/ripper/iso-tasks/{id}/claim</code> (atomic CAS to IN_PROGRESS, owner =
+   hostname) — the same handshake transcoders use
+   (<a href="../../services/backend/arm_backend/routers/transcoder.py">routers/transcoder.py register/claim</a>),
+   and gets back <code>{drive_id, container_iso_path, session_id}</code>,</li>
+<li>runs <code>_run_pipeline(container_iso_path, pending_session_id=session_id)</code> — the
+   <strong>existing</strong> pipeline
+   (<a href="../../services/ripper/arm_ripper/job_controller.py#L175">job_controller.py:175</a>),</li>
+<li>on rip-complete (or failure) marks the task terminal and <strong>exits</strong> — no
+   idle-forever, no WS command loop. The container is auto-removed.</li>
+</ol>
+<p>There's <strong>no <code>iso.rip</code> WS command</strong> in this model (my first draft had one); the
+dispatcher-spawn handshake replaces it, matching how transcoders are dispatched.
+WS stays only for in-flight <strong>cancel</strong>, which mirrors transcode cancel: the
+backend force-stops the labeled container.</p>
+<h2 id="drive-identity-the-one-genuine-new-wrinkle">Drive identity — the one genuine new wrinkle</h2>
+<p>Transcoders don't create jobs, so they need no drive. ISO rippers <strong>do</strong> — and
+<code>Job.drive_id</code> is a non-null FK
+(<a href="../../packages/arm_common/arm_common/models/job.py">job.py</a>). Two options:</p>
+<ul>
+<li><strong>(A) Per-spawn ephemeral drive (recommended for v1).</strong> The backend creates a
+  <code>Drive</code> row when it spawns the worker (hostname <code>arm-ripper-iso-{suffix}</code>,
+  <code>device_path</code> = the ISO ref) and hands its <code>drive_id</code> back at claim. The job
+  attaches to it; the row persists as provenance ("ripped by ephemeral ISO worker
+  X"). Add a <code>kind</code> discriminator (<code>optical</code> | <code>iso</code>) so the UI's live-drive list
+  hides them. <strong>Pipeline and owner-auth stay byte-identical</strong> — biggest win.</li>
+<li><strong>(B) Decouple — nullable <code>Job.drive_id</code> + <code>Job.source</code>.</strong> Cleaner long-term,
+  but <code>drive_id</code> is load-bearing in drive-owner auth, <code>get_in_flight_job</code>, and
+  rip-start/track/complete; relaxing it touches the whole rip path. Bigger, later.</li>
+</ul>
+<p>Recommend <strong>(A)</strong> now, revisit <strong>(B)</strong> if ephemeral drive rows become noise.</p>
+<h2 id="the-iso-source-library-now-uploads-later">The ISO source: library now, uploads later</h2>
+<ul>
+<li><strong>v1 (today): a server-side library directory.</strong> A host path (e.g.
+  <code>./iso-library</code>, NAS mount, etc.) bind-mounted <strong>into the spawned worker</strong> at
+  <code>/isos</code> (read-only). Because the backend spawns via the host Docker daemon, the
+  mount uses a <strong>host path</strong> the same way transcode mounts do
+  (<code>ARM_HOST_RAW_PATH</code>/<code>ARM_HOST_MEDIA_PATH</code>,
+  <a href="../../services/backend/arm_backend/config.py#L78-L80">config.py:78-80</a>) — add
+  <code>ARM_HOST_ISO_LIBRARY_PATH</code>. <code>GET /api/iso/library</code> lists what's available for
+  the picker; the backend also mounts it read-only so it can enumerate + validate.</li>
+<li><strong>Future (deferred): UI upload.</strong> A browser upload writes the <code>.iso</code> into the
+  same library/staging dir, then enqueues an identical <code>rip_tasks</code> row. <strong>The
+  ephemeral-spawn core does not change</strong> — uploads are just a new way to populate
+  the library. Multi-GB resumable upload, staging storage, and GC are the real
+  work and are out of scope for v1.</li>
+</ul>
+<h2 id="backend-changes">Backend changes</h2>
+<ul>
+<li><strong><code>POST /api/iso/rips</code></strong> (JWT): body <code>{ iso, session_id }</code>. <strong>Enforce path
+  containment</strong> — <code>iso</code> names a file <em>relative to the library root</em>; resolve with
+  <code>realpath</code> and reject anything escaping it, the same barrier just added for
+  <code>job_id</code> path sinks (commits <code>144d063d</code>, <code>6443d24b</code>). <strong>Never accept an
+  absolute/arbitrary client path</strong> — this is the feature's #1 security property.
+  Inserts a QUEUED <code>rip_tasks</code> row; returns <code>task_id</code>.</li>
+<li><strong><code>GET /api/iso/library</code></strong> (JWT): enumerate the mounted library for the picker.</li>
+<li><strong><code>POST /api/ripper/iso-tasks/{id}/claim</code></strong> + heartbeat (service token): the
+  worker handshake, cloned from the transcoder claim
+  (<a href="../../services/backend/arm_backend/routers/transcoder.py#L134">routers/transcoder.py:134</a>).</li>
+<li><strong>Rip dispatcher + <code>rip_tasks</code> migration</strong>, cloned from transcode.</li>
+<li><strong>Cancel</strong>: force-stop the labeled container, mirroring transcode cancel.</li>
+</ul>
+<p>The Docker socket is <strong>already</strong> mounted into the backend for transcode spawns
+(<a href="../../docker-compose.yml.example#L68-L70">docker-compose.yml.example:68-70</a>) — no new privilege
+is taken on; the root-equivalent risk is already accepted in
+<a href="../06-deployment/">06-deployment.md</a>.</p>
+<h2 id="ripper-changes">Ripper changes</h2>
+<ul>
+<li><strong>Task-mode entrypoint</strong> keyed off <code>ARM_RIP_TASK_ID</code>: claim → <code>_run_pipeline</code>
+  → exit. No poll loop, no idle.</li>
+<li><strong>Auth model = transcoder, not physical ripper.</strong> Transcoders mount only the CA
+  cert and auth with <code>ARM_SERVICE_TOKEN</code>; they have no per-container leaf cert.
+  Ephemeral ISO rippers should do the same — which sidesteps the "issue a stable
+  <code>arm-ripper-iso</code> leaf cert" problem entirely (an ephemeral worker can't have a
+  stable cert). <em>Confirm</em> whether the ripper REST/WS surface currently mandates a
+  client leaf cert; if so, relax it to token-only for task-mode workers.</li>
+<li><strong>Log identity from an explicit name, not the device.</strong> Today the log file is
+  derived from <code>ARM_DRIVE_DEV</code>
+  (<a href="../../services/ripper/arm_ripper/main.py#L33">main.py:33</a>); the transcoder
+  instead takes an explicit <code>ARM_SERVICE_NAME</code>. Adopt the same so each worker
+  logs to <code>arm-ripper-iso-{suffix}.log</code> — unique per spawn, zero collision.</li>
+</ul>
+<h2 id="what-disappears">What disappears</h2>
+<ul>
+<li>The <strong>"stop the live ripper"</strong> dance in the smoke script — ephemeral workers
+  have unique hostnames + unique log names and never touch <code>/dev/sr0</code>, so there's
+  no interaction with <code>arm-ripper-sr0</code> at all. (The script's "same drive_id"
+  rationale was already inaccurate — different hostnames, different drive_ids.)</li>
+<li>The <strong>idle-forever</strong> container and the bespoke <strong><code>docker run</code></strong> block.</li>
+<li>The original <strong>compose-overlay</strong> idea from our discussion. An ephemeral worker
+  isn't a compose service, so there's no <code>docker-compose.iso.yml</code> — exactly like
+  there's no <code>docker-compose.transcode.yml</code>. The GPU-overlay analogy dissolves;
+  the correct analogy is the transcoder, which ships as an <strong>image + backend
+  settings</strong>, not a service.</li>
+</ul>
+<h2 id="deployment">Deployment</h2>
+<p>No long-running service. Just:</p>
+<ul>
+<li>Build the <strong><code>arm-ripper-iso</code> image</strong> (likely the existing ripper image with the
+  task-mode entrypoint; possibly the same image, different command).</li>
+<li>Backend settings, mirroring the transcode ones
+  (<a href="../../services/backend/arm_backend/config.py#L53-L86">config.py:53-86</a>):
+  <code>ARM_ISO_RIPPER_IMAGE</code>, <code>MAX_PARALLEL_ISO_RIPS</code>, <code>ARM_HOST_ISO_LIBRARY_PATH</code>,
+  reusing <code>ARM_DOCKER_NETWORK</code> and the existing host-path settings.</li>
+<li>GPU is irrelevant to ripping (it's a MakeMKV/file op); the spawn omits the GPU
+  kwargs entirely.</li>
+</ul>
+<h2 id="concurrency">Concurrency</h2>
+<p>Falls out of the dispatcher for free: natural parallelism, one container per
+task, capped by <code>MAX_PARALLEL_ISO_RIPS</code> (default 1, like transcodes), queued FIFO
+in <code>rip_tasks</code>. No 409-when-busy, no manual serialization — the queue handles it,
+and it's the first real consumer of the deferred "queue mechanism" in
+<a href="../07-open-questions/">07-open-questions.md</a>.</p>
+<h2 id="migration-the-smoke-test-becomes-a-thin-client">Migration: the smoke test becomes a thin client</h2>
+<p><a href="../../devtools/iso-smoke.sh">devtools/iso-smoke.sh</a> collapses to: drop the
+fixture in the library → <code>POST /api/iso/rips</code> → wait for the job → (optional)
+existing transcode assertions. The fixture-fetch and key-resolution helpers stay
+(genuine test scaffolding); the <code>docker run</code> block, the live-ripper stop/restart,
+and the idle container all go away. <code>ARM_MANUAL_TRIGGER_ISO</code> is retired unless we
+still want a no-backend single-container smoke.</p>
+<h2 id="decisions-needed">Decisions needed</h2>
+<ol>
+<li><strong>Drive identity</strong> — per-spawn ephemeral drive + <code>kind</code> discriminator
+   (recommended) vs decouple <code>Job.drive_id</code> (cleaner, bigger).</li>
+<li><strong>Same image or a dedicated <code>arm-ripper-iso</code> image</strong> — reuse the ripper image
+   with a task-mode command (recommended) vs a separate build.</li>
+<li><strong><code>rip_tasks</code> shared with <code>transcode_tasks</code> patterns</strong> — clone the table/sweep
+   (recommended) vs a generalized <code>worker_tasks</code> abstraction over both.</li>
+<li><strong>Library catalog</strong> — backend enumerates a mounted dir (recommended) vs the
+   worker reports inventory.</li>
+<li><strong>Cancel semantics</strong> — label force-stop like transcode (recommended) vs a WS
+   abandon command.</li>
+<li><strong><code>MAX_PARALLEL_ISO_RIPS</code> default</strong> — 1 (match transcode) vs higher (ripping is
+   I/O-bound, not GPU-bound, so concurrency is cheaper).</li>
+</ol>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="../01-architecture/">01-architecture.md</a> — the transcode-container topology this clones.</li>
+<li><a href="../02-job-lifecycle/">02-job-lifecycle.md</a> — the pipeline ISO ingestion reuses verbatim.</li>
+<li><a href="../04-data-model/">04-data-model.md</a> — <code>Drive</code>/<code>Job</code>/<code>transcode_tasks</code>; note the <code>output_mode='iso'</code> name clash.</li>
+<li><a href="../06-deployment/">06-deployment.md</a> — Docker-socket access already accepted for transcode spawns.</li>
+<li><a href="../07-open-questions/">07-open-questions.md</a> — the deferred queue mechanism this first exercises.</li>
+<li><a href="../../services/backend/arm_backend/transcode_dispatcher.py">transcode_dispatcher.py</a> — the spawn/dispatch/sweep template to clone.</li>
+<li><a href="../plans/MASTER_IMPLEMENTATION_PLAN.md">Phase 15 in MASTER_IMPLEMENTATION_PLAN.md</a> — where ISO-as-source is currently parked.</li>
+<li><a href="../contributors/real-disc-smoke.md">contributors/real-disc-smoke.md</a> — current <code>ARM_MANUAL_TRIGGER_ISO</code> smoke procedure.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../09-testing/" class="btn btn-neutral float-left" title="09. Testing"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../contributing/" class="btn btn-neutral float-right" title="Contributing">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../09-testing/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../contributing/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

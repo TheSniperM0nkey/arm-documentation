@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Contributing - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Contributing";
+        var mkdocs_page_input_path = "contributing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../00-vision/">00. Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../01-architecture/">01. Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02-job-lifecycle/">02. Job Lifecycle</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05-cross-cutting/">05. Cross Cutting</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06-deployment/">06. Deployment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09-testing/">09. Testing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10-iso-source-ripping/">10. ISO Source Ripping</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Contributing</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#reporting-issues-bugs-and-feature-requests">Reporting issues, bugs, and feature requests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#development-model-trunk-based">Development model: trunk-based</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pull-requests">Pull requests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#local-development">Local development</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#tests">Tests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#linting-formatting-and-types">Linting, formatting, and types</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#wire-contract-openapi">Wire contract (OpenAPI)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#hardwareos-documentation">Hardware/OS documentation</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#testing-and-quality">Testing and quality</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Contributing</li>
+      <li class="breadcrumb-item active">Contributing</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/contributing.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="contributing-guide">Contributing Guide</h1>
+<p>Thank you for contributing to the Automatic Ripping Machine.</p>
+<p>This is <strong>ARM v3</strong> — a greenfield rebuild (FastAPI backend, Vue UI, Postgres, a
+ripper-per-drive and an ephemeral transcoder). The architecture is documented
+under <a href="docs/arch/">docs/arch/</a>; start at <a href="docs/arch/README.md">docs/arch/README.md</a>.
+ARM v2 is frozen — no new work targets it. Its code remains in the
+repository's pre-cutover git history.</p>
+<h2 id="reporting-issues-bugs-and-feature-requests">Reporting issues, bugs, and feature requests</h2>
+<p>Open an issue on GitHub. For a bug report, please include:</p>
+<ul>
+<li><strong>Which service</strong> is involved (<code>backend</code>, <code>ripper</code>, <code>transcode</code>, or <code>ui</code>).</li>
+<li><strong>Logs.</strong> Grab them with <code>docker compose logs &lt;service&gt;</code>; set
+  <code>ARM_LOG_LEVEL=debug</code> for a clean, detailed log and reproduce before
+  attaching. You can drag-and-drop a log file onto an issue comment.</li>
+<li>Because ARM drives external tools (MakeMKV, HandBrake), try the underlying
+  tool by hand to rule out an upstream problem — see
+  <a href="docs/ops/makemkv.md">docs/ops/makemkv.md</a>.</li>
+</ul>
+<p>When filing a bug, enhancement, or feature request, please say whether you are
+able/willing to make the change yourself in a pull request.</p>
+<h2 id="development-model-trunk-based">Development model: trunk-based</h2>
+<p>ARM v3 uses <strong>trunk-based development</strong>. There is <strong>no long-lived <code>develop</code> or
+<code>dev</code> branch</strong> — <code>main</code> is the trunk and the single source of truth, kept
+always-releasable.</p>
+<ul>
+<li><strong>Branch short, merge fast.</strong> Cut a short-lived branch from <code>main</code>, keep it
+  small and focused, rebase on <code>main</code> often, and merge it back via PR. Long-running
+  branches accumulate drift; avoid them.</li>
+<li><strong>Releases are tags, not branches.</strong> A semver tag on <code>main</code> (<code>v3.1.0</code>) triggers
+  the release workflow to build the matching versioned image; <code>latest</code> tracks the
+  tip of <code>main</code>. Cutting a release never means promoting work through a parallel
+  branch.</li>
+<li><strong>Backports are on-demand and temporary.</strong> If an already-released version needs
+  a fix while <code>main</code> has moved ahead, cut a short-lived <code>release/3.0.x</code> branch from
+  that tag, land the fix, tag it, and delete the branch. Don't maintain a permanent
+  release line.</li>
+<li><strong>v2 is closed.</strong> It lives in the pre-cutover git history; nothing new branches off it.</li>
+</ul>
+<h2 id="pull-requests">Pull requests</h2>
+<ul>
+<li>Fork the repo (or push a branch) and open the PR <strong>against <code>main</code></strong>. See
+  <a href="https://help.github.com/articles/creating-a-pull-request/">https://help.github.com/articles/creating-a-pull-request/</a>.</li>
+<li><strong>One logical change per PR.</strong> Independent changes get separate PRs so they can
+  be reviewed and merged individually. Trivial or mutually-dependent changes may
+  share a PR.</li>
+<li><strong>Rebase before review</strong> so your branch is current with <code>main</code>; we squash-merge
+  to keep the trunk linear.</li>
+<li><strong>CI must pass</strong> (<code>.github/workflows/ci.yml</code>): ruff format/lint, mypy and
+  <code>vue-tsc</code> type checks, the per-service <code>pytest</code> suites, and the OpenAPI
+  drift check.</li>
+<li>Update affected docs / <code>README.md</code> in the same PR.</li>
+</ul>
+<h2 id="local-development">Local development</h2>
+<p>Prerequisites: <a href="https://astral.sh/uv"><code>uv</code></a>, Docker with the <code>docker compose</code>
+v2 plugin, <code>openssl</code>, and Node/<code>npm</code> (for the UI).</p>
+<pre><code class="language-bash">bash devtools/setup-dev.sh     # one-shot, idempotent dev-env setup
+docker compose up -d           # bring up the stack
+</code></pre>
+<p>The UI is served at <a href="https://localhost:8081">https://localhost:8081</a>.</p>
+<h2 id="tests">Tests</h2>
+<p>The Python suites run with <strong>one command and zero infrastructure</strong> — no Docker,
+Postgres, drives, or network:</p>
+<pre><code class="language-bash">uv run pytest                  # all backend / ripper / transcode suites
+</code></pre>
+<p>See <a href="docs/arch/09-testing.md">docs/arch/09-testing.md</a> for the two-tier design
+(fast fake-session unit tests + the real-DB e2e harness) and the coverage policy.</p>
+<p>Heavier end-to-end drills live in <code>devtools/</code>:</p>
+<ul>
+<li><code>bash devtools/iso-smoke.sh</code> — full scan → identify → rip → transcode against an
+  ISO fixture (no physical disc required).</li>
+<li><code>bash devtools/crash-drill.sh</code> — backend crash-recovery drill.</li>
+</ul>
+<h2 id="linting-formatting-and-types">Linting, formatting, and types</h2>
+<p>Style and type checks run through <code>pre-commit</code>:</p>
+<pre><code class="language-bash">uv run pre-commit install              # install the git hook once
+uv run pre-commit run --all-files      # run everything manually
+</code></pre>
+<p>Hooks: <code>ruff-format</code> + <code>ruff</code> and <code>mypy</code> on Python; ESLint, Prettier and
+<code>vue-tsc</code> on the UI; <code>shellcheck</code> on shell scripts. Line length is <strong>120</strong>.</p>
+<h2 id="wire-contract-openapi">Wire contract (OpenAPI)</h2>
+<p>The UI is generated from the backend's OpenAPI schema, and CI's <code>openapi-drift</code>
+job fails if they diverge. If you change a backend router or an <code>arm_common</code>
+schema that affects the API:</p>
+<pre><code class="language-bash">bash devtools/regen-openapi-snapshot.sh   # refresh services/ui/openapi.snapshot.json
+cd services/ui &amp;&amp; npm run openapi-types    # regenerate the TypeScript types
+</code></pre>
+<p>Commit both regenerated artifacts with your change.</p>
+<h2 id="hardwareos-documentation">Hardware/OS documentation</h2>
+<p>Many contributors run ARM in environments other than the reference setup. If you
+have ARM working somewhere new and want to help others, please submit a how-to to
+the <a href="https://github.com/automatic-ripping-machine/automatic-ripping-machine/wiki">wiki</a>.</p>
+<h2 id="testing-and-quality">Testing and quality</h2>
+<p>If you are interested in helping out with testing, quality, or release
+engineering, please let us know.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../10-iso-source-ripping/" class="btn btn-neutral float-left" title="10. ISO Source Ripping"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../aiusagepolicy/" class="btn btn-neutral float-right" title="AI Usage Policy">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../10-iso-source-ripping/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../aiusagepolicy/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

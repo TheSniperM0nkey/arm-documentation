@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>09. Testing - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "09. Testing";
+        var mkdocs_page_input_path = "09-testing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../00-vision/">00. Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../01-architecture/">01. Architecture</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02-job-lifecycle/">02. Job Lifecycle</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05-cross-cutting/">05. Cross Cutting</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06-deployment/">06. Deployment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">09. Testing</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#principles">Principles</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#two-tiers-backend-as-built">Two tiers (Backend, as built)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#tier-1-fast-fake-session-tests">Tier 1 — fast fake-session tests</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#tier-2-real-db-e2e-harness">Tier 2 — real-DB e2e harness</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#why-not-real-postgres-in-ci">Why not real Postgres in CI?</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#coverage-policy">Coverage policy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-we-dont-test-and-why">What we don't test, and why</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#planned-tiers-not-yet-built">Planned tiers (not yet built)</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#contract-tier">Contract tier</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#integration-rig-big-buck-bunny">Integration rig — Big Buck Bunny</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#conventions-sharp-edges">Conventions &amp; sharp edges</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10-iso-source-ripping/">10. ISO Source Ripping</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">09. Testing</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/09-testing.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="testing-philosophy">Testing philosophy</h1>
+<p>As-built testing architecture for v3, as of 2026-05-16.</p>
+<p>This is the single source of truth for testing across v3. It records the
+principles, what was actually built for the Backend, and what is planned
+but not yet built (the ripper/transcode contract tier and the Big Buck
+Bunny integration rig — see <a href="#planned-tiers-not-yet-built">Planned tiers</a>).
+The original design intent lived in
+<a href="../05-cross-cutting/">05-cross-cutting.md</a>; that section was retired in
+favour of this document once the Backend tiers diverged from it.</p>
+<h2 id="principles">Principles</h2>
+<ol>
+<li><strong>Tests run with one command, zero infrastructure.</strong> <code>uv run pytest</code>
+   from the repo root — no Docker, no Postgres, no drives, no network. A
+   contributor clones, syncs, and runs the suite in seconds. CI does
+   exactly the same thing. The moment the suite needs a sidecar to pass,
+   it stops being run.</li>
+<li><strong>Coverage is a floor for confidence, not a vanity number.</strong> The
+   Backend holds <strong>100% statement coverage</strong>; branch coverage is measured.
+   The point isn't the percentage — it's that every line has at least one
+   test asserting <em>something</em> about it, so a regression has nowhere to
+   hide silently. Lines that genuinely can't be exercised in-process are
+   excluded <em>explicitly and with a written reason</em>, never by lowering the
+   bar.</li>
+<li><strong>Test the real code path, fake only the boundary.</strong> We don't mock
+   <code>arm_common</code> types, routers, or business logic. The only things faked
+   are true I/O boundaries: the database session, the docker socket,
+   outbound HTTP, the WS hub, the filesystem clock. A test that mocks the
+   thing it's testing is deleted.</li>
+<li><strong>Speed is a feature.</strong> The full Backend suite (600+ tests) runs in
+   ~15s. The deliberately-slow bits of production (argon2 work factor) are
+   dialled down in tests <em>without changing the algorithm or code path</em>.
+   Slow tests don't get run; un-run tests rot.</li>
+<li><strong>Determinism over fidelity where they conflict.</strong> A test that passes
+   or fails based on whether the host has a GPU or a docker socket is
+   worse than no test. Environment-dependent startup code is pinned to one
+   deterministic path and the other side is covered by a unit test or an
+   explicit, justified exclusion.</li>
+</ol>
+<h2 id="two-tiers-backend-as-built">Two tiers (Backend, as built)</h2>
+<p>The plan in 05 was "per-service unit tests against real Postgres" +
+"contract tests". The Backend instead settled on two tiers that need no
+external services:</p>
+<h3 id="tier-1-fast-fake-session-tests">Tier 1 — fast fake-session tests</h3>
+<p>The bulk of the suite. Each test builds a minimal <code>FastAPI()</code> (or calls a
+function directly), overrides the <code>get_session</code> dependency with an
+<strong>in-memory fake <code>AsyncSession</code></strong> (<code>tests/_fakes.FakeSession</code>) that
+pattern-matches <code>select(...).where(...)</code> against rows the test seeded, and
+asserts on status codes, response bodies, emitted WS events, and DB
+mutations. ~0.3 s per test. This is where exhaustive branch coverage of
+routers and pure logic lives.</p>
+<p>The fake is a deliberate, owned piece of infrastructure — not a mock
+framework. It models the narrow slice of the SQLAlchemy async API the
+handlers actually use. When a handler needs a query shape the fake can't
+express (e.g. <code>pg_insert(...).on_conflict_do_update</code>), that's a signal,
+not a workaround: the SQL is Postgres-specific and belongs to the
+integration tier, and the handler flow around it is covered with a
+tailored per-test fake instead.</p>
+<h3 id="tier-2-real-db-e2e-harness">Tier 2 — real-DB e2e harness</h3>
+<p><code>tests/e2e/</code> boots the <strong>actual <code>arm_backend.main:app</code></strong> — real lifespan,
+real seeders, every router mounted, real <code>require_jwt</code> loading a real user
+row — against a real SQLAlchemy engine on a file-backed <strong>SQLite</strong>
+database. This is the only tier that exercises <code>main.py</code>, <code>db.py</code>,
+<code>seeders.py</code>, and the wiring the fake-session tier structurally cannot
+reach.</p>
+<p>SQLite stands in for Postgres because the principle ("zero
+infrastructure") outranks dialect fidelity for <em>API-surface</em> coverage. The
+production models pin <code>JSONB</code>/<code>ARRAY</code>; the harness swaps them to generic
+<code>JSON</code> in the shared metadata (snapshot-and-restore, so Tier 1 still sees
+the real Postgres types) and creates the schema from model metadata rather
+than running the Postgres-flavoured Alembic migrations. The consequence is
+explicit and accepted: <strong>migration fidelity and Postgres-only query paths
+(<code>@&gt;</code> array containment, <code>ON CONFLICT</code>) are out of scope for this tier</strong>
+and belong to the integration rig in 05.</p>
+<h3 id="why-not-real-postgres-in-ci">Why not real Postgres in CI?</h3>
+<p>Spinning Postgres in CI was the original Tier 1 design. It was abandoned
+for the Backend because it violates principle 1 for the 99% of tests that
+don't need real Postgres semantics — every contributor and every CI run
+would pay container-startup latency and flakiness to test routing logic
+that doesn't care what the database is. The few paths that <em>do</em> care
+(dialect SQL, migrations) are better served by a separate, explicitly-
+scoped integration tier (see <a href="#planned-tiers-not-yet-built">Planned tiers</a>)
+than by taxing the whole suite.</p>
+<h2 id="coverage-policy">Coverage policy</h2>
+<ul>
+<li><strong>100% statements on the Backend; branch coverage measured.</strong> Config in
+  <code>pyproject.toml [tool.coverage]</code>, <code>branch = true</code>.</li>
+<li><strong>CI measures, it does not gate.</strong> <code>coverage run -m pytest</code> +
+  <code>coverage report</code> run in the <code>test-python</code> job. There is no <code>fail_under</code>
+  — a deliberate choice (a regression <em>ratchet</em> below the achieved level
+  is ready to enable when wanted, but a hard gate was explicitly declined
+  for now so coverage noise doesn't block unrelated PRs).</li>
+<li><strong>Exclusions are explicit and justified.</strong> Unreachable-in-process code
+  carries <code># pragma: no cover</code> (or <code># pragma: no branch</code> for
+  exhaustively-handled enum/union fallthroughs) with a one-line reason on
+  the comment <em>above</em> the statement. Categories: the real DB session
+  (overridden in every test), <code>main()</code>'s uvicorn entrypoint, lifespan
+  defensive/shutdown-timeout arms, post-seeder impossible states, async
+  race guards, and code dead-by-construction (e.g. a fallback for a
+  now-mandatory dependency). Protocol/<code>@overload</code> <code>...</code> stubs are excluded
+  globally via <code>exclude_lines</code>.</li>
+<li><strong>Residual partial-branches are documented, not hidden.</strong> A handful of
+  branch arrows in the deepest async/race code remain uncovered rather
+  than be forced with fragile fault injection. They are listed in the
+  project memory, not papered over with a pragma (pragmas are for
+  <em>unreachable</em> code, not <em>hard-to-reach</em> code — the distinction is load-
+  bearing).</li>
+</ul>
+<h2 id="what-we-dont-test-and-why">What we don't test, and why</h2>
+<ul>
+<li><strong>Real Postgres dialect + Alembic migrations.</strong> Deferred to the
+  integration tier (<a href="#planned-tiers-not-yet-built">Planned tiers</a>). The
+  SQLite e2e tier explicitly does not assert these.</li>
+<li><strong>Cross-service flows over real REST/WS between live containers.</strong> The
+  planned contract tier is the intended home; not yet built.</li>
+<li><strong>Browser e2e (Playwright).</strong> Fragile, low return; the UI is thin and
+  reviewed visually + via vitest unit tests.</li>
+<li><strong>Hardware</strong> — real drives, real GPUs, real MakeMKV/HandBrake against
+  arbitrary discs. GPU/docker probing is pinned deterministic; the planned
+  Big Buck Bunny loop-device rig is the home for real-pipeline assertions.</li>
+</ul>
+<h2 id="planned-tiers-not-yet-built">Planned tiers (not yet built)</h2>
+<p>These were specified in the original design and remain valid; they are not
+yet implemented. They are deliberately <em>separate</em> from the zero-infra
+suite above — they need infrastructure, so they run on demand / in a
+dedicated job, never as a tax on <code>uv run pytest</code>.</p>
+<h3 id="contract-tier">Contract tier</h3>
+<ul>
+<li>The published OpenAPI (from FastAPI) is checked against
+  <code>arm_common.schemas</code> on every PR — catches "schema changed, generated
+  client didn't" before runtime.</li>
+<li>One contract test per ripper/transcoder call: frame a real request, post
+  it to a spun-up Backend in test mode, assert shape + status. Catches
+  "producer changed, consumer didn't".</li>
+</ul>
+<p>This is the intended home for the cross-service REST/WS flows that the
+in-process tiers deliberately don't cover.</p>
+<h3 id="integration-rig-big-buck-bunny">Integration rig — Big Buck Bunny</h3>
+<p>The project lead owns a copy of <strong>Big Buck Bunny</strong> (CC-BY, legally
+redistributable); a BBB ISO is the integration fixture:</p>
+<ul>
+<li>A <code>devtools/arm-test-rip</code> script mounts the BBB ISO as a loop device in
+  a disposable ripper container, lets real MakeMKV (or a loopback
+  <code>dd</code>-based stub where MakeMKV's container licensing is awkward in CI)
+  process it, and asserts the output lands in <code>/raw/</code> with correct
+  metadata.</li>
+<li>Runs on a developer machine; may be reduced in CI to a recorded fixture
+  if MakeMKV licensing is a blocker.</li>
+<li>This is the home for the real-pipeline / real-Postgres-dialect /
+  Alembic-migration assertions the SQLite e2e tier explicitly skips.</li>
+</ul>
+<p>Arbitrary proprietary discs are never tested — obvious legal reasons.</p>
+<h2 id="conventions-sharp-edges">Conventions &amp; sharp edges</h2>
+<p>These cost real debugging time; they are load-bearing, not trivia.</p>
+<ul>
+<li><strong>The <code>arm_backend.config</code> Settings object is a process singleton.</strong>
+  <code>tests/e2e/conftest.py</code> is imported during collection <em>before any test
+  module</em>, so its module-level <code>os.environ.setdefault(...)</code> wins the
+  singleton session-wide. Its values <strong>must match the rest of the suite's
+  convention</strong> (<code>ARM_SERVICE_TOKEN="tok-service"</code>, a dummy Postgres
+  <code>DATABASE_URL</code>) or unrelated fake-session tests start 401'ing. New
+  shared env defaults go through this lens.</li>
+<li><strong>Test module basenames must be unique across services.</strong> pytest's
+  default prepend import mode with no <code>tests/</code> package <code>__init__.py</code> means
+  two <code>test_dispatcher.py</code> files (one in <code>backend</code>, one in <code>ripper</code>) abort
+  <em>whole-suite</em> collection with <code>import file mismatch</code>. Keep
+  <code>services/*/tests/test_*.py</code> basenames globally unique.</li>
+<li><strong><code>db._build_engine</code> mangles <code>sqlite://</code> URLs</strong> via a urlparse round-
+  trip, so the import-time <code>DATABASE_URL</code> stays a dummy Postgres URL and
+  the e2e harness swaps the engine object after import.</li>
+<li><strong>Long inline <code># pragma</code> comments get reflowed by ruff</strong> and the pragma
+  ends up on the wrong physical line (coverage then doesn't honour it).
+  Keep the inline pragma to the bare <code># pragma: no cover</code>; put the
+  justification on the line above.</li>
+<li><strong>argon2 cost is dialled down in the e2e harness</strong> (the hash self-
+  describes its params, so a cheap hasher still round-trips the real
+  verifier — cost changes, code path doesn't). ~80s → ~15s.</li>
+</ul>
+<p>See also: <a href="../05-cross-cutting/">05-cross-cutting.md</a> (the other cross-
+cutting concerns; testing was consolidated out of it into this document),
+<a href="../08-v2-isolation-and-cutover/">08-v2-isolation-and-cutover.md</a> (why v3
+tests were kept under <code>v3/</code> during development).</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../08-v2-isolation-and-cutover/" class="btn btn-neutral float-left" title="08. v2 Isolation and Cutover"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../10-iso-source-ripping/" class="btn btn-neutral float-right" title="10. ISO Source Ripping">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../08-v2-isolation-and-cutover/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../10-iso-source-ripping/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

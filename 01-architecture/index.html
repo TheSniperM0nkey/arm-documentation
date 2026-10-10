@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>01. Architecture - A.R.M Project Docs</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "01. Architecture";
+        var mkdocs_page_input_path = "01-architecture.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/bash.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/yaml.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/json.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/ini.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/markdown.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> A.R.M Project Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Overview</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="..">Vision</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../v3scope/">v3 Scope</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../roadmap/">Roadmap</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../architecturesummary/">Architecture Summary</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../00-vision/">00. Vision</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">01. Architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#container-topology">Container topology</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#services-at-a-glance">Services at a glance</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#arm-ui">arm-ui</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#arm-backend">arm-backend</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#arm-ripper-drive">arm-ripper-&lt;drive&gt;</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#arm-transcode-uuid">arm-transcode-&lt;uuid&gt;</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#arm-db">arm-db</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#data-flow-disc-insertion-to-finished-file">Data flow: disc insertion to finished file</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#drive-polling-cdrom_drive_status">Drive polling (CDROM_DRIVE_STATUS)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#shared-volumes">Shared volumes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#privilege-security-model">Privilege &amp; security model</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#whats-not-in-this-diagram">What's NOT in this diagram</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../02-job-lifecycle/">02. Job Lifecycle</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../03-protocol/">03. Protocol</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../04-data-model/">04. Data Model</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../05-cross-cutting/">05. Cross Cutting</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../06-deployment/">06. Deployment</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../07-open-questions/">07 Open Questions</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../08-v2-isolation-and-cutover/">08. v2 Isolation and Cutover</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../09-testing/">09. Testing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../10-iso-source-ripping/">10. ISO Source Ripping</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Contributing</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../contributing/">Contributing</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../aiusagepolicy/">AI Usage Policy</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">A.R.M Project Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">01. Architecture</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/SteveBunt/arm-documentation/edit/master/docs/01-architecture.md" class="icon icon-github"> Edit on github</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="01-system-architecture-overview">01 — System Architecture Overview</h1>
+<h2 id="container-topology">Container topology</h2>
+<pre><code>                              ┌───────────────────────┐
+                              │   Browser (admin)     │
+                              └──────────┬────────────┘
+                                         │  HTTPS / WSS (always; TLS terminates at arm-ui nginx)
+                                         │
+              ┌──────────────────────────▼──────────────────────────┐
+              │                    arm-ui                            │
+              │   nginx serving Vite-built SPA (Vue 3 + Vite)        │
+              │   /api → proxy to arm-backend:8443 (HTTPS)           │
+              │   /ws  → proxy to arm-backend:8443 (WSS)             │
+              └──────────────────────────┬──────────────────────────┘
+                                         │  HTTPS + WSS (internal CA)
+                                         │
+    ┌────────────────────────────────────▼────────────────────────────────────┐
+    │                               arm-backend                                │
+    │   FastAPI + Pydantic + Uvicorn                                           │
+    │                                                                          │
+    │   ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐│
+    │   │ /api (REST)  │  │ /ws (hub)    │  │ state machine│  │ adapters    ││
+    │   │   users,     │  │  live        │  │   rip, meta, │  │  TMDB/OMDB  ││
+    │   │   jobs,      │  │  progress,   │  │   session,   │  │  MB         ││
+    │   │   sessions,  │  │  events      │  │   transcode  │  │  Notify ◇   ││
+    │   │   config     │  │              │  │              │  │             ││
+    │   └──────────────┘  └──────────────┘  └──────┬───────┘  └─────────────┘│
+    │                                              │                          │
+    │                                     docker-py ▼ /var/run/docker.sock    │
+    │                                     spawns arm-transcode                │
+    └──────┬────────────────────────┬────────────────────────┬────────────────┘
+           │                        │                        │
+           │                        │                        │ (ephemeral)
+           │ HTTPS + WSS            │ HTTPS + WSS            ▼
+    ┌──────▼─────────┐       ┌──────▼─────────┐       ┌──────────────────┐
+    │ arm-ripper-sr0 │       │ arm-ripper-sr1 │       │ arm-transcode-*  │
+    │  Python        │       │  Python        │       │  Python wrapper  │
+    │  MakeMKV       │       │  MakeMKV       │       │  around HandBrake│
+    │  /dev/sr0      │       │  /dev/sr1      │       │  (GPU optional)  │
+    └──────┬─────────┘       └──────┬─────────┘       └──────┬───────────┘
+           │                        │                        │
+           │        writes raw      │                        │ reads raw, writes transcoded
+           ▼                        ▼                        ▼
+    ┌─────────────────────────────────────────────────────────────────────┐
+    │                 /raw   (shared volume, flat tree)                    │
+    │                 /media (shared volume, Plex-friendly tree)           │
+    │                 /logs  (shared volume, JSONL per service)            │
+    └─────────────────────────────────────────────────────────────────────┘
+
+    ┌──────────────────────────────────────┐
+    │ arm-db   Postgres 18                 │◀── all services read/write here
+    └──────────────────────────────────────┘
+
+  ◇ Notifications: typed events emit from Backend; dispatched via Apprise with native pass-through config (see 05-cross-cutting.md &quot;Notifications&quot;).
+</code></pre>
+<h2 id="services-at-a-glance">Services at a glance</h2>
+<h3 id="arm-ui"><code>arm-ui</code></h3>
+<ul>
+<li><strong>Image:</strong> custom, <code>nginx:alpine</code> + built SPA bundle.</li>
+<li><strong>Replicas:</strong> 1.</li>
+<li><strong>Inputs:</strong> browser traffic.</li>
+<li><strong>Outputs:</strong> proxied calls to Backend.</li>
+<li><strong>State:</strong> none. Fully stateless.</li>
+<li><strong>Notes:</strong> SPA can be rebuilt and redeployed without touching Backend. Vue 3 (Composition API + <code>&lt;script setup&gt;</code>) chosen for the contributor team's existing fluency; Pinia for stores, vue-router for routing.</li>
+</ul>
+<h3 id="arm-backend"><code>arm-backend</code></h3>
+<ul>
+<li><strong>Image:</strong> custom, Python 3.14 + FastAPI + Uvicorn + docker-py.</li>
+<li><strong>Replicas:</strong> 1. (Not horizontally scalable in v3.0 — it owns the WS hub and the state machine.)</li>
+<li><strong>Inputs:</strong> REST + WS from UI and rippers; Docker socket for spawning transcoders.</li>
+<li><strong>Outputs:</strong> Postgres writes; container spawns; outbound HTTPS to TMDB/OMDB/MB/notifications.</li>
+<li><strong>State:</strong> all durable state is in Postgres. The WS hub's connection table is in-memory and rebuilt on reconnect.</li>
+<li><strong>Notes:</strong> Requires <code>/var/run/docker.sock</code> mounted to spawn <code>arm-transcode</code> containers.</li>
+</ul>
+<h3 id="arm-ripper-drive"><code>arm-ripper-&lt;drive&gt;</code></h3>
+<ul>
+<li><strong>Image:</strong> custom, Python 3.14 + MakeMKV + libdvdcss + abcde.</li>
+<li><strong>Replicas:</strong> one per optical drive. Declared explicitly as separate services in <code>docker-compose.yml</code> — e.g. <code>arm-ripper-sr0</code>, <code>arm-ripper-sr1</code>.</li>
+<li><strong>Inputs:</strong> polled <code>ioctl(CDROM_DRIVE_STATUS)</code> on passed-through <code>/dev/sr*</code>; REST/WS config from Backend.</li>
+<li><strong>Outputs:</strong> raw media files under <code>/raw/&lt;job-id&gt;/</code>; REST status updates + WS progress to Backend.</li>
+<li><strong>State:</strong> ephemeral. All persistent state is pushed to Backend.</li>
+<li><strong>Notes:</strong> Reads <code>ARM_DRIVE_DEV</code> env var on boot (e.g. <code>/dev/sr0</code>) and registers with Backend at startup. Never talks to the internet.</li>
+</ul>
+<h3 id="arm-transcode-uuid"><code>arm-transcode-&lt;uuid&gt;</code></h3>
+<ul>
+<li><strong>Image:</strong> custom, Python 3.14 + HandBrakeCLI + ffmpeg + optional VAAPI/NVENC/QSV drivers.</li>
+<li><strong>Replicas:</strong> zero at rest. Backend spawns one container per transcode job; the container exits when the job completes.</li>
+<li><strong>Inputs:</strong> transcode job spec via env / mounted config; raw files from <code>/raw</code> (read-only).</li>
+<li><strong>Outputs:</strong> transcoded files to <code>/media</code>; REST status + WS progress to Backend.</li>
+<li><strong>State:</strong> none. Job spec comes from Backend at container creation.</li>
+<li><strong>Notes:</strong> Auto-detects available hardware encoders and advertises them to Backend on handshake. Backend flag <code>ARM_AUTO_TRANSCODE</code> toggles "spawn when idle" vs. "user must initiate."</li>
+</ul>
+<h3 id="arm-db"><code>arm-db</code></h3>
+<ul>
+<li><strong>Image:</strong> <code>postgres:18</code>.</li>
+<li><strong>Replicas:</strong> 1.</li>
+<li><strong>Notes:</strong> Bootstrap credentials come from env vars; all other config (TMDB key, Apprise URLs, etc.) lives in DB rows written through the UI, stored plaintext.</li>
+</ul>
+<h2 id="data-flow-disc-insertion-to-finished-file">Data flow: disc insertion to finished file</h2>
+<ol>
+<li><strong>Disc insertion.</strong> Ripper detects via polling <code>ioctl(CDROM_DRIVE_STATUS)</code> on its bound <code>/dev/sr*</code> every 2s. No udev rules on host or in container.</li>
+<li><strong>Identify.</strong> Ripper reads disc type (DVD/BD/CD/data) and performs a MakeMKV scan on DVD/BD to extract track layout (per-title durations, stream info) plus the disc's volume label; MakeMKV itself does not surface episode titles, feature-vs-extra labels, or disc numbers — rich metadata comes from the external lookup in the next step (~30-90s latency floor, surfaced in the UI as "Analyzing disc…"). CDs use MusicBrainz Disc ID.</li>
+<li><strong>Lookup.</strong> Ripper calls <code>POST /api/ripper/identify</code> on Backend with the scan result. Backend queries TMDB/OMDB/MB. Ripper blocks on this call.</li>
+<li>On hit: Backend returns title + year + artwork URL + suggested track layout. A <code>Job</code> row is created in state <code>identified</code>.</li>
+<li>On miss: behavior depends on <code>config.block_on_miss</code>. Default (<code>true</code>): Backend returns <code>status: "needs_user_input"</code>, UI shows a prompt, ripper waits for resolution — disc stays in drive, rip does not start. Opt-in (<code>false</code>): ripper begins ripping immediately to <code>/raw/&lt;job_id&gt;/</code> (raw paths key on <code>job_id</code>, which is assigned pre-identify and never changes). Transcode is gated on identity: queued <code>session_applications</code> remain in <code>waiting_identify</code> until the user resolves identity, then fan out against the resolved title. No files are ever renamed or moved — the only path that could encode identity is the <code>/media</code> path, and nothing is written there until identity exists. A rip is <strong>never</strong> cancelled by miss-handling.</li>
+<li><strong>Rip.</strong> Ripper creates one <code>Track</code> row per title and begins ripping. Each track's state transitions <code>queued → in_progress → done|failed</code>. Progress streams over WS.</li>
+<li><strong>Rip complete.</strong> Ripper emits <code>rip.completed</code> event, ejects disc, returns to idle.</li>
+<li><strong>Auto-session (if configured).</strong> If the drive has a <code>default_session_id</code> set and auto-transcode is on, Backend queues a session application for that session against the new job.</li>
+<li><strong>Transcode spawn.</strong> Backend dequeues a transcode job and spawns <code>arm-transcode-&lt;uuid&gt;</code> via Docker socket. Container mounts <code>/raw</code> read-only and <code>/media</code> read-write, receives job spec via env.</li>
+<li><strong>Transcode.</strong> Worker runs HandBrake, streams progress over WS, writes output to <code>/media/&lt;layout&gt;/&lt;title&gt;</code>.</li>
+<li><strong>Transcode complete.</strong> Worker emits <code>session.completed</code> event, container exits, Backend updates state, notifications fire.</li>
+<li><strong>Done.</strong> Raw is retained by default (no auto-prune). User can queue additional sessions from UI at any time.</li>
+</ol>
+<h2 id="drive-polling-cdrom_drive_status">Drive polling (<code>CDROM_DRIVE_STATUS</code>)</h2>
+<p>The ripper reads disc presence directly via <code>ioctl(CDROM_DRIVE_STATUS)</code> on its bound <code>/dev/sr*</code>. This is the same ioctl <code>udev</code>'s <code>cdrom_id</code> helper uses to emit <code>ID_CDROM_MEDIA</code> events — we are not inventing a mechanism, just cutting out the event router so the ripper works inside a container without host-side udev config.</p>
+<p><strong>Mechanics.</strong> Open <code>/dev/sr*</code> with <code>O_RDONLY | O_NONBLOCK</code> (so <code>open()</code> does not block on an empty or open tray), call the ioctl, close. It's a controller query — no disc I/O, no spin-up, cheap to run every 2s. No root required; the ripper user needs membership in <code>cdrom</code>.</p>
+<p><strong>Return values</strong> (from <code>&lt;linux/cdrom.h&gt;</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Constant</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>CDS_NO_INFO</code></td>
+<td>Drive does not report status (rare on modern hardware)</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>CDS_NO_DISC</code></td>
+<td>Tray closed, empty</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>CDS_TRAY_OPEN</code></td>
+<td>Tray out</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>CDS_DRIVE_NOT_READY</code></td>
+<td>Spinning up / reading TOC</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>CDS_DISC_OK</code></td>
+<td>Ready to read</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Insert transition.</strong> <code>NO_DISC</code> or <code>TRAY_OPEN</code> → <code>DRIVE_NOT_READY</code> (1–5s while the drive reads TOC) → <code>DISC_OK</code>. <code>DRIVE_NOT_READY</code> is treated as "keep polling," not an error.</p>
+<p><strong>During an active rip.</strong> Polling is suspended once MakeMKV starts reading the disc. The drive is being actively read, and the signal that matters — "did a read fail?" — bubbles up through MakeMKV directly. A user-initiated mid-rip eject manifests as a read error, not a status transition we need to race for. This also forecloses a v2-era failure mode (see issue #1731, PR #1703) where multiple insert events spawned duplicate rip processes on the same <code>/dev/sr*</code>: with one long-running ripper owning the drive and polling gated on rip state, a second rip cannot start on a disc that is already being read.</p>
+<p><strong>After rip completion.</strong> Ripper auto-ejects, polling resumes, and the ripper waits for <code>TRAY_OPEN</code> → <code>NO_DISC</code> → <code>DISC_OK</code> to detect the next disc. No state is held between discs — each <code>DISC_OK</code> transition allocates a fresh <code>job_id</code>.</p>
+<h2 id="shared-volumes">Shared volumes</h2>
+<table>
+<thead>
+<tr>
+<th>Volume</th>
+<th>Mount path</th>
+<th>Writers</th>
+<th>Readers</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>arm_raw</code></td>
+<td><code>/raw</code></td>
+<td>Rippers</td>
+<td>Transcoders (ro)</td>
+<td>Flat tree: <code>/raw/&lt;job_id&gt;/&lt;track&gt;.mkv</code>. No auto-prune.</td>
+</tr>
+<tr>
+<td><code>arm_media</code></td>
+<td><code>/media</code></td>
+<td>Transcoders</td>
+<td>(user's media server)</td>
+<td>Plex/Jellyfin-friendly layout by default; session templates can override.</td>
+</tr>
+<tr>
+<td><code>arm_logs</code></td>
+<td><code>/logs</code></td>
+<td>All services</td>
+<td>Backend (for UI log view)</td>
+<td>JSONL per service; lines include <code>job_id</code> for correlation.</td>
+</tr>
+<tr>
+<td><code>arm_config</code></td>
+<td><code>/config</code></td>
+<td>Backend</td>
+<td>All services</td>
+<td>App-level config written via UI.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="privilege-security-model">Privilege &amp; security model</h2>
+<ul>
+<li><strong>Backend mounts the Docker socket.</strong> Standard homelab pattern (Traefik, Watchtower). Treat <code>arm-backend</code> as host-root-equivalent.</li>
+<li><strong>Ripper gets device access.</strong> <code>--device /dev/sr0:/dev/sr0</code> with whatever cgroup rules MakeMKV needs.</li>
+<li><strong>Transcode may get GPU device access.</strong> <code>--device /dev/dri</code> or nvidia runtime, conditionally.</li>
+<li><strong>UI and DB are unprivileged.</strong></li>
+</ul>
+<h2 id="whats-not-in-this-diagram">What's NOT in this diagram</h2>
+<ul>
+<li><strong>Queue / broker.</strong> We considered DB-as-queue, Redis, NATS. The decision is deferred — the state machine is designed so the queue can be swapped in without reshaping services. See <a href="../07-open-questions/">07-open-questions.md</a>.</li>
+<li><strong>Metadata worker.</strong> Backend does TMDB/OMDB/MusicBrainz lookups inline. This stays inline for v3 — lookup latency is dominated by the MakeMKV scan anyway, and a separate worker is complexity without payoff at homelab scale.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../00-vision/" class="btn btn-neutral float-left" title="00. Vision"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../02-job-lifecycle/" class="btn btn-neutral float-right" title="02. Job Lifecycle">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/SteveBunt/arm-documentation" class="fa fa-code-fork" style="color: #fcfcfc"> github</a>
+        </span>
+    
+    
+      <span><a href="../00-vision/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../02-job-lifecycle/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
